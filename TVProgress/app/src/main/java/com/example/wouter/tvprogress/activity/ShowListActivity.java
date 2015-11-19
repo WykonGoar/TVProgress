@@ -1,26 +1,39 @@
 package com.example.wouter.tvprogress.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.example.wouter.tvprogress.R;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Show;
 import com.example.wouter.tvprogress.model.ShowListAdapter;
 
-public class ShowListActivity extends AppCompatActivity {
+import java.util.LinkedList;
 
-    private Show[] mShows = new Show[0];
+public class ShowListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+
+    private LinkedList<Show> mShows = new LinkedList<>();
 
     private ListView mShowListView;
+    private SearchView mSearchView;
+
     private DatabaseConnection mDatabaseConnection;
+    private ShowListAdapter mShowListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +51,15 @@ public class ShowListActivity extends AppCompatActivity {
                 showClicked(position);
             }
         });
+
+        mSearchView = (SearchView) findViewById(R.id.searchView);
+        mSearchView.setOnQueryTextListener(this);
     }
 
     private void loadShows(){
         mShows = mDatabaseConnection.getShows("SELECT * FROM shows");
 
-        ShowListAdapter mShowListAdapter = new ShowListAdapter(this, mShows);
+        mShowListAdapter = new ShowListAdapter(this, mShows);
         mShowListView.setAdapter(mShowListAdapter);
     }
 
@@ -55,7 +71,7 @@ public class ShowListActivity extends AppCompatActivity {
     }
 
     private void showClicked(int position){
-        Show show = mShows[position];
+        Show show = mShows.get(position);
 
         Intent mIntent = new Intent(getApplicationContext(), ShowActivity.class);
         mIntent.putExtra("id", show.getId());
@@ -78,27 +94,22 @@ public class ShowListActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+         //   return true;
+        //}
 
         return super.onOptionsItemSelected(item);
     }
 
-    private Show[] getTestShows(){
 
-        Show show1 = new Show(1, "Show 1");
-        show1.setCurrentSeason(1);
-        show1.setCurrentEpisode(5);
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
 
-        Show show2 = new Show(2, "Show 2");
-        show2.setCurrentSeason(2);
-        show2.setCurrentEpisode(10);
-
-        Show show3 = new Show(3, "Show 3");
-        show3.setCurrentSeason(3);
-        show3.setCurrentEpisode(15);
-
-        return new Show[]{show1, show2,show3};
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mShowListAdapter.getFilter().filter(newText);
+        return false;
     }
 }

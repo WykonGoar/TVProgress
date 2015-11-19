@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 /**
@@ -86,7 +87,7 @@ public class DatabaseConnection extends Activity {
         return mDatabase.rawQuery(query, null);
     }
 
-    public Show[] getShows(String query){
+    public LinkedList<Show> getShows(String query){
         Cursor mCursor = null;
         try {
             mCursor = executeReturn(query);
@@ -96,9 +97,7 @@ public class DatabaseConnection extends Activity {
 
         mCursor.moveToFirst();
 
-        int rowCount = mCursor.getCount();
-        Show shows[] = new Show[rowCount];
-        int showCount = 0;
+        LinkedList<Show> shows = new LinkedList<>();
 
         while(!mCursor.isAfterLast()){
             //Id
@@ -121,15 +120,15 @@ public class DatabaseConnection extends Activity {
             String url = mCursor.getString(mCursor.getColumnIndex("url"));
 
             Show show = new Show(id, title, currentSeason, currentEpisode,  lastSeason, lastEpisode, null, null, url);
-            shows[showCount] = show;
-            showCount ++;
+            shows.add(show);
+
             mCursor.moveToNext();
         }
 
         return  shows;
     }
 
-    public Episode[] getEpisodes(int showId)
+    public LinkedList<Episode> getEpisodes(int showId)
     {
         String query = "SELECT * FROM episodes WHERE showId = " + showId + " ORDER BY season DESC, episode DESC";
         Cursor mCursor = null;
@@ -140,9 +139,7 @@ public class DatabaseConnection extends Activity {
         }
         mCursor.moveToFirst();
 
-        int rowCount = mCursor.getCount();
-        Episode mEpisodes[] = new Episode[rowCount];
-        int episodeCount = 0;
+        LinkedList<Episode> episodes = new LinkedList<>();
 
         while(!mCursor.isAfterLast()){
             //id
@@ -161,14 +158,13 @@ public class DatabaseConnection extends Activity {
             if(iSeen == 1)
                 seen = true;
 
-            Episode ingredient = new Episode(id, currentShowId, season, episode, title, seen);
-            mEpisodes[episodeCount] = ingredient;
-            episodeCount++;
+            Episode newEpisode = new Episode(id, currentShowId, season, episode, title, seen);
+            episodes.add(newEpisode);
 
             mCursor.moveToNext();
         }
 
-        return  mEpisodes;
+        return  episodes;
     }
 }
 

@@ -105,13 +105,13 @@ public class ShowActivity extends AppCompatActivity {
     }
 
     private Show getShow(int showId){
-        Show[] shows = mDatabaseConnection.getShows("SELECT * FROM shows WHERE _id = " + showId);
+        LinkedList<Show> shows = mDatabaseConnection.getShows("SELECT * FROM shows WHERE _id = " + showId);
         Show selectedShow = null;
 
-        if (shows.length == 0)
+        if (shows.size() == 0)
             throw new IndexOutOfBoundsException("Show with id '" + showId + "' not found.");
         else
-            selectedShow = shows[0];
+            selectedShow = shows.get(0);
 
         return selectedShow;
     }
@@ -147,7 +147,7 @@ public class ShowActivity extends AppCompatActivity {
     }
 
     private void prepareListData() {
-        Episode[] episodes = mDatabaseConnection.getEpisodes(mShow.getId());
+        LinkedList<Episode> episodes = mDatabaseConnection.getEpisodes(mShow.getId());
 
         mListDataHeader = new LinkedList<Integer>();
         mListDataChild = new HashMap<Integer, LinkedList<Episode>>();
@@ -187,9 +187,7 @@ public class ShowActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
