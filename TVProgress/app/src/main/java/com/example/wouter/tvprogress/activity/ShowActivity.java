@@ -1,15 +1,23 @@
 package com.example.wouter.tvprogress.activity;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ExpandableListView.OnChildClickListener;
 
 import com.example.wouter.tvprogress.R;
+import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Episode;
 import com.example.wouter.tvprogress.model.EpisodeListAdapter;
 import com.example.wouter.tvprogress.model.Show;
@@ -23,6 +31,13 @@ public class ShowActivity extends AppCompatActivity {
     private HashMap<Integer, LinkedList<Episode>> mListDataChild;
     private Show mShow;
 
+    private TextView tvTitle;
+    private TextView tvUpToDate;
+    private EditText etCurrentSeason;
+    private EditText etCurrentEpisode;
+    private ExpandableListView  expandableListView;
+    private DatabaseConnection mDatabaseConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,55 +48,131 @@ public class ShowActivity extends AppCompatActivity {
         if (showId == -1)
             throw new IndexOutOfBoundsException("No id is given.");
 
-        mShow = getTestShows()[showId];
+        SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(mDatabase, this);
+
+        mShow = getShow(showId);
 
         prepareListData();
-        ExpandableListView  expandableListView = (ExpandableListView)  findViewById(R.id.elvEpisodes);
+
+        tvTitle = (TextView) findViewById(R.id.tvTitle);
+        tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
+        etCurrentSeason = (EditText) findViewById(R.id.etCurrentSeason);
+        etCurrentEpisode = (EditText) findViewById(R.id.etCurrentEpisode);
+        expandableListView = (ExpandableListView)  findViewById(R.id.elvEpisodes);
+        // Listview on child click listener
+        expandableListView.setOnChildClickListener(new OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                int groupValue = mListDataHeader.get(groupPosition);
+                Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
+
+                CheckBox cbSeen = (CheckBox) v.findViewById(R.id.cbSeen);
+
+                if(selectedEpisode.isSeen()) {
+                    mDatabaseConnection.executeNonReturn("UPDATE episodes SET seen = 0 WHERE _id = " + selectedEpisode.getId());
+                    cbSeen.setChecked(false);
+                    selectedEpisode.setmSeen(false);
+                }
+                else {
+                    mDatabaseConnection.executeNonReturn("UPDATE episodes SET seen = 1 WHERE _id = " + selectedEpisode.getId());
+                    cbSeen.setChecked(true);
+                    selectedEpisode.setmSeen(true);
+                }
+
+                return true;
+            }
+        });
+
+        Button bNextSeason = (Button) findViewById(R.id.bNextSeason);
+        bNextSeason.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextSeason();
+            }
+        });
+
+        Button bNextEpisode = (Button) findViewById(R.id.bNextEpisode);
+        bNextEpisode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextEpisode();
+            }
+        });
+
+        loadShow();
+    }
+
+    private Show getShow(int showId){
+        Show[] shows = mDatabaseConnection.getShows("SELECT * FROM shows WHERE _id = " + showId);
+        Show selectedShow = null;
+
+        if (shows.length == 0)
+            throw new IndexOutOfBoundsException("Show with id '" + showId + "' not found.");
+        else
+            selectedShow = shows[0];
+
+        return selectedShow;
+    }
+
+    private void loadShow(){
+        mShow = getShow(mShow.getId());
+
+        tvTitle.setText(mShow.getTitle());
+        etCurrentSeason.setText("" + mShow.getCurrentSeason());
+        etCurrentEpisode.setText("" + mShow.getCurrentEpisode());
+
+        if(mShow.isUpToDate())
+            tvUpToDate.setVisibility(View.VISIBLE);
+
+        prepareListData();
         ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
         expandableListView.setAdapter(expandableListAdapter);
-
         expandableListView.expandGroup(0);
     }
 
+    private void nextSeason(){
+        mShow.setCurrentSeason(mShow.getCurrentSeason() + 1);
+        mDatabaseConnection.executeNonReturn("UPDATE shows SET currentSeason = " + mShow.getCurrentSeason() + " WHERE _id = " + mShow.getId());
+
+        loadShow();
+    }
+
+    private void nextEpisode(){
+        mShow.setCurrentEpisode(mShow.getCurrentEpisode() + 1);
+        mDatabaseConnection.executeNonReturn("UPDATE shows SET currentEpisode = " + mShow.getCurrentEpisode() + " WHERE _id = " + mShow.getId());
+
+        loadShow();
+    }
+
     private void prepareListData() {
+        Episode[] episodes = mDatabaseConnection.getEpisodes(mShow.getId());
+
         mListDataHeader = new LinkedList<Integer>();
         mListDataChild = new HashMap<Integer, LinkedList<Episode>>();
 
-        mListDataHeader.add(1);
-        mListDataHeader.add(2);
+        for(Episode episode : episodes){
+            int currentSeason = episode.getSeason();
 
-        Episode episode1 = new Episode(0);
-        episode1.setmSeason(1);
-        episode1.setmEpisode(1);
-        episode1.setmTitle("Pilot1");
+            LinkedList<Episode> newEpisodesList = null;
 
-        Episode episode2 = new Episode(1);
-        episode2.setmSeason(1);
-        episode2.setmEpisode(2);
-        episode2.setmTitle("New Ep1");
+            if (!mListDataHeader.contains(currentSeason)){
+                mListDataHeader.add(currentSeason);
+                newEpisodesList = new LinkedList<Episode>();
+            }
+            else {
+                newEpisodesList = mListDataChild.get(currentSeason);
+            }
 
-        LinkedList season1 = new LinkedList<Episode>();
-        season1.add(episode1);
-        season1.add(episode2);
-        mListDataChild.put(1, season1);
+            newEpisodesList.add(episode);
 
-        Episode episode3 = new Episode(2);
-        episode3.setmSeason(2);
-        episode3.setmEpisode(1);
-        episode3.setmTitle("Pilot12");
-
-        Episode episode4 = new Episode(3);
-        episode4.setmSeason(2);
-        episode4.setmEpisode(2);
-        episode4.setmTitle("New Ep2");
-
-        LinkedList season2 = new LinkedList<Episode>();
-        season2.add(episode3);
-        season2.add(episode4);
-        mListDataChild.put(2, season2);
+            mListDataChild.remove(currentSeason);
+            mListDataChild.put(currentSeason, newEpisodesList);
+        }
     }
 
-        @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_show, menu);
@@ -101,22 +192,5 @@ public class ShowActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private Show[] getTestShows(){
-
-        Show show1 = new Show(0, "Show 1");
-        show1.setCurrentSeason(1);
-        show1.setCurrentEpisode(5);
-
-        Show show2 = new Show(1, "Show 2");
-        show2.setCurrentSeason(2);
-        show2.setCurrentEpisode(10);
-
-        Show show3 = new Show(2, "Show 3");
-        show3.setCurrentSeason(3);
-        show3.setCurrentEpisode(15);
-
-        return new Show[]{show1, show2,show3};
     }
 }

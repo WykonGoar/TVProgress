@@ -23,17 +23,29 @@ public class Show {
         mTitle= title;
     }
 
+    public Show(int mId, String mTitle, int mCurrentSeason, int mCurrentEpisode, int mLastSeason, int mLastEpisode, Image mShowImage, Image mShowBanner, String mURL) {
+        this.mId = mId;
+        this.mTitle = mTitle;
+        this.mCurrentSeason = mCurrentSeason;
+        this.mCurrentEpisode = mCurrentEpisode;
+        this.mLastSeason = mLastSeason;
+        this.mLastEpisode = mLastEpisode;
+        this.mShowImage = mShowImage;
+        this.mShowBanner = mShowBanner;
+        this.mURL = mURL;
+    }
+
     public int getId() { return mId; }
 
     public String getTitle() { return mTitle; }
 
     public int getCurrentSeason() { return mCurrentSeason;}
 
-    public int getCurrentEpisode() { return mCurrentSeason; }
+    public int getCurrentEpisode() { return mCurrentEpisode; }
 
-    public int getmLastSeason() { return mLastSeason; }
+    public int getLastSeason() { return mLastSeason; }
 
-    public int getmLastEpisode() { return mLastEpisode; }
+    public int getLastEpisode() { return mLastEpisode; }
 
     public Image getShowImage() { return mShowImage; }
 
@@ -52,4 +64,15 @@ public class Show {
     public void setLastEpisode(int lastEpisode) { this.mLastEpisode = lastEpisode; }
 
     public void setURL(String url) { this.mURL = url; }
+
+    public boolean isUpToDate(){
+        if(mLastSeason != -1
+                && mLastEpisode != -1
+                && mCurrentSeason == mLastSeason
+                && mCurrentEpisode == mLastEpisode)
+        {
+                return true;
+        }
+        return false;
+    }
 }

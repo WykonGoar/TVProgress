@@ -1,6 +1,7 @@
 package com.example.wouter.tvprogress.activity;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.wouter.tvprogress.R;
+import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Show;
 import com.example.wouter.tvprogress.model.ShowListAdapter;
 
@@ -18,11 +20,15 @@ public class ShowListActivity extends AppCompatActivity {
     private Show[] mShows = new Show[0];
 
     private ListView mShowListView;
+    private DatabaseConnection mDatabaseConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_list);
+
+        SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(mDatabase, this);
 
         mShowListView = (ListView) findViewById(R.id.lvShows);
         mShowListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -35,7 +41,7 @@ public class ShowListActivity extends AppCompatActivity {
     }
 
     private void loadShows(){
-        mShows = getTestShows();
+        mShows = mDatabaseConnection.getShows("SELECT * FROM shows");
 
         ShowListAdapter mShowListAdapter = new ShowListAdapter(this, mShows);
         mShowListView.setAdapter(mShowListAdapter);

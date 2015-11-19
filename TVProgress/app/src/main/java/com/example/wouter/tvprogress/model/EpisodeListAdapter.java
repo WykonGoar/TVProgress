@@ -1,12 +1,14 @@
 package com.example.wouter.tvprogress.model;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.example.wouter.tvprogress.R;
@@ -21,14 +23,18 @@ import java.util.List;
 public class EpisodeListAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
-    private Episode[] mEpisode;
     private LinkedList<Integer> mListDataHeader;
     private HashMap<Integer, LinkedList<Episode>> mListChildData;
+
+    private DatabaseConnection mDatabaseConnection;
 
     public EpisodeListAdapter(Context context, LinkedList<Integer> listDataHeader, HashMap<Integer, LinkedList<Episode>> listChildData) {
         mContext = context;
         mListDataHeader = listDataHeader;
         mListChildData = listChildData;
+
+        SQLiteDatabase mDatabase = mContext.openOrCreateDatabase("TVProgressDB", mContext.MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(mDatabase, mContext);
     }
 
     @Override
@@ -90,20 +96,17 @@ public class EpisodeListAdapter extends BaseExpandableListAdapter {
 
         Episode episode = (Episode) getChild(groupPosition, childPosition);
 
-        if(episode.isSeen())
-        {
-            cbSeen.isChecked();
-        }
+        cbSeen.setChecked(episode.isSeen());
 
         tvEpisode.setText("Episode " + episode.getEpisode());
         tvTitle.setText("" + episode.getTitle());
 
-        return  convertView;
+        return convertView;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 
     @Override
