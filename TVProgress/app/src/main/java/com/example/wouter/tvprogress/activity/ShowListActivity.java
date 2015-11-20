@@ -93,10 +93,11 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-         //   return true;
-        //}
+        if(id == R.id.action_new)
+        {
+            Intent mIntent = new Intent(getApplicationContext(), EditShowActivity.class);
+            startActivity(mIntent);
+        }
 
         return super.onOptionsItemSelected(item);
     }

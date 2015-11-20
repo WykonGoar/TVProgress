@@ -57,6 +57,8 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
         TextView tvCurrentEpisode = (TextView) rowView.findViewById(R.id.tvCurrentEpisode);
 
         Show show = mShows.get(position);
+        if (show.getImageAsImage() != null)
+            ivShow.setImageBitmap(show.getImageAsImage());
         tvTitle.setText(show.getTitle());
         tvCurrentSeason.setText("Season: " + show.getCurrentSeason());
         tvCurrentEpisode.setText("Episode: " + show.getCurrentEpisode());
@@ -82,7 +84,7 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
                 for (int i = 0; i < mShowFilterList.size(); i++) {
                     if ((mShowFilterList.get(i).getTitle().toUpperCase()).contains(constraint.toString().toUpperCase())) {
 
-                        Show show = new Show(mShowFilterList.get(i).getId(), mShowFilterList.get(i).getTitle(), mShowFilterList.get(i).getCurrentSeason(), mShowFilterList.get(i).getCurrentEpisode(), mShowFilterList.get(i).getLastSeason(), mShowFilterList.get(i).getLastEpisode(), mShowFilterList.get(i).getShowImage(), mShowFilterList.get(i).getShowBanner(), mShowFilterList.get(i).getURL());
+                        Show show = new Show(mShowFilterList.get(i).getId(), mShowFilterList.get(i).getTitle(), mShowFilterList.get(i).getCurrentSeason(), mShowFilterList.get(i).getCurrentEpisode(), mShowFilterList.get(i).getLastSeason(), mShowFilterList.get(i).getLastEpisode(), mShowFilterList.get(i).getImage(), mShowFilterList.get(i).getBanner(), mShowFilterList.get(i).getURL());
 
                         filterList.add(show);
                     }

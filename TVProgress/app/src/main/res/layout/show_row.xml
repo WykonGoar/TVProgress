@@ -11,7 +11,8 @@
         android:layout_weight="0.18"
         android:src="@mipmap/ic_launcher"
         android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp" />
+        android:layout_marginRight="0dp"
+        android:scaleType="fitXY" />
 
     <LinearLayout
         android:orientation="vertical"

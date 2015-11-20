@@ -113,13 +113,13 @@ public class DatabaseConnection extends Activity {
             //lastEpisode
             int lastEpisode = mCursor.getInt(mCursor.getColumnIndex("lastEpisode"));
             //image
-            //int image = mCursor.getInt(mCursor.getColumnIndex("image"));
+            String image = mCursor.getString(mCursor.getColumnIndex("image"));
             // banner
-            //int banner = mCursor.getInt(mCursor.getColumnIndex("banner"));
+            String banner = mCursor.getString(mCursor.getColumnIndex("banner"));
             //url
             String url = mCursor.getString(mCursor.getColumnIndex("url"));
 
-            Show show = new Show(id, title, currentSeason, currentEpisode,  lastSeason, lastEpisode, null, null, url);
+            Show show = new Show(id, title, currentSeason, currentEpisode,  lastSeason, lastEpisode, image, banner, url);
             shows.add(show);
 
             mCursor.moveToNext();

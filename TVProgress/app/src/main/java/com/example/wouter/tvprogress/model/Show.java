@@ -1,37 +1,34 @@
 package com.example.wouter.tvprogress.model;
 
-import android.media.Image;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 /**
  * Created by Wouter on 11-11-2015.
  */
 public class Show {
 
-    private int mId;
-    private String mTitle;
+    private int mId = -1;
+    private String mTitle = "";
     private int mCurrentSeason = 1;
     private int mCurrentEpisode = 0;
     private int mLastSeason = -1;
     private int mLastEpisode = -1;
-    private Image mShowImage;
-    private Image mShowBanner;
-    private String mURL;
+    private String mImage = "";
+    private String mBanner = "";
+    private String mURL = "";
 
-    public Show(int id, String title)
-    {
-        mId = id;
-        mTitle= title;
-    }
+    public Show(){}
 
-    public Show(int mId, String mTitle, int mCurrentSeason, int mCurrentEpisode, int mLastSeason, int mLastEpisode, Image mShowImage, Image mShowBanner, String mURL) {
+    public Show(int mId, String mTitle, int mCurrentSeason, int mCurrentEpisode, int mLastSeason, int mLastEpisode, String mImage, String mBanner, String mURL) {
         this.mId = mId;
         this.mTitle = mTitle;
         this.mCurrentSeason = mCurrentSeason;
         this.mCurrentEpisode = mCurrentEpisode;
         this.mLastSeason = mLastSeason;
         this.mLastEpisode = mLastEpisode;
-        this.mShowImage = mShowImage;
-        this.mShowBanner = mShowBanner;
+        this.mImage = mImage;
+        this.mBanner = mBanner;
         this.mURL = mURL;
     }
 
@@ -47,9 +44,29 @@ public class Show {
 
     public int getLastEpisode() { return mLastEpisode; }
 
-    public Image getShowImage() { return mShowImage; }
+    public Bitmap getImageAsImage() {
+        if(mImage.isEmpty() || mImage == null)
+            return  null;
 
-    public Image getShowBanner() { return mShowBanner; }
+        Bitmap imageFull = BitmapFactory.decodeFile(mImage);
+        int nh = (int) (imageFull.getHeight() * (512.0 / imageFull.getWidth()));
+        return Bitmap.createScaledBitmap(imageFull, 512, nh, true);
+
+    }
+
+    public Bitmap getBannerAsImage() {
+        if (mBanner.isEmpty() || mBanner == null)
+            return null;
+
+        Bitmap imageFull = BitmapFactory.decodeFile(mBanner);
+        int nh = (int) (imageFull.getHeight() * (512.0 / imageFull.getWidth()));
+        return Bitmap.createScaledBitmap(imageFull, 512, nh, true);
+
+    }
+
+    public String getImage() {return mImage;}
+
+    public String getBanner() { return mBanner; }
 
     public String getURL() { return mURL; }
 
@@ -62,6 +79,10 @@ public class Show {
     public void setLastSeason(int lastSeason) { this.mLastSeason = lastSeason; }
 
     public void setLastEpisode(int lastEpisode) { this.mLastEpisode = lastEpisode; }
+
+    public void setImage(String path) {this.mImage = path; }
+
+    public void setBanner(String path) {this.mBanner = path; }
 
     public void setURL(String url) { this.mURL = url; }
 

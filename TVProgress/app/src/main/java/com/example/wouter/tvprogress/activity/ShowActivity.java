@@ -12,8 +12,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ExpandableListView.OnChildClickListener;
 
 import com.example.wouter.tvprogress.R;
@@ -35,6 +35,7 @@ public class ShowActivity extends AppCompatActivity {
     private TextView tvUpToDate;
     private EditText etCurrentSeason;
     private EditText etCurrentEpisode;
+    private ImageView ivBanner;
     private ExpandableListView  expandableListView;
     private DatabaseConnection mDatabaseConnection;
 
@@ -51,14 +52,11 @@ public class ShowActivity extends AppCompatActivity {
         SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
         mDatabaseConnection = new DatabaseConnection(mDatabase, this);
 
-        mShow = getShow(showId);
-
-        prepareListData();
-
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
         etCurrentSeason = (EditText) findViewById(R.id.etCurrentSeason);
         etCurrentEpisode = (EditText) findViewById(R.id.etCurrentEpisode);
+        ivBanner = (ImageView) findViewById(R.id.ivBanner);
         expandableListView = (ExpandableListView)  findViewById(R.id.elvEpisodes);
         // Listview on child click listener
         expandableListView.setOnChildClickListener(new OnChildClickListener() {
@@ -70,12 +68,11 @@ public class ShowActivity extends AppCompatActivity {
 
                 CheckBox cbSeen = (CheckBox) v.findViewById(R.id.cbSeen);
 
-                if(selectedEpisode.isSeen()) {
+                if (selectedEpisode.isSeen()) {
                     mDatabaseConnection.executeNonReturn("UPDATE episodes SET seen = 0 WHERE _id = " + selectedEpisode.getId());
                     cbSeen.setChecked(false);
                     selectedEpisode.setmSeen(false);
-                }
-                else {
+                } else {
                     mDatabaseConnection.executeNonReturn("UPDATE episodes SET seen = 1 WHERE _id = " + selectedEpisode.getId());
                     cbSeen.setChecked(true);
                     selectedEpisode.setmSeen(true);
@@ -101,6 +98,8 @@ public class ShowActivity extends AppCompatActivity {
             }
         });
 
+        mShow = getShow(showId);
+
         loadShow();
     }
 
@@ -123,13 +122,20 @@ public class ShowActivity extends AppCompatActivity {
         etCurrentSeason.setText("" + mShow.getCurrentSeason());
         etCurrentEpisode.setText("" + mShow.getCurrentEpisode());
 
+        if (mShow.getBannerAsImage() != null)
+            ivBanner.setImageBitmap(mShow.getBannerAsImage());
         if(mShow.isUpToDate())
             tvUpToDate.setVisibility(View.VISIBLE);
 
+
+
         prepareListData();
-        ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
-        expandableListView.setAdapter(expandableListAdapter);
-        expandableListView.expandGroup(0);
+
+        if (mListDataHeader != null) {
+            ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
+            expandableListView.setAdapter(expandableListAdapter);
+            expandableListView.expandGroup(0);
+        }
     }
 
     private void nextSeason(){
@@ -148,6 +154,9 @@ public class ShowActivity extends AppCompatActivity {
 
     private void prepareListData() {
         LinkedList<Episode> episodes = mDatabaseConnection.getEpisodes(mShow.getId());
+
+        if(episodes.size() == 0)
+            return;
 
         mListDataHeader = new LinkedList<Integer>();
         mListDataChild = new HashMap<Integer, LinkedList<Episode>>();
@@ -187,6 +196,12 @@ public class ShowActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if (id == R.id.action_edit) {
+            Intent mIntent = new Intent(getApplicationContext(), EditShowActivity.class);
+            mIntent.putExtra("id", mShow.getId());
+
+            startActivity(mIntent);
+        }
 
 
         return super.onOptionsItemSelected(item);

@@ -5,4 +5,7 @@
     <string name="title_activity_show">Show</string>
 
     <string name="search">Zoeken</string>
+    <string name="title_activity_edit_show">EditShowActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
