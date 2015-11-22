@@ -3,6 +3,8 @@ package com.example.wouter.tvprogress.model;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.File;
+
 /**
  * Created by Wouter on 11-11-2015.
  */
@@ -48,9 +50,13 @@ public class Show {
         if(mImage.isEmpty() || mImage == null)
             return  null;
 
-        Bitmap imageFull = BitmapFactory.decodeFile(mImage);
-        int nh = (int) (imageFull.getHeight() * (512.0 / imageFull.getWidth()));
-        return Bitmap.createScaledBitmap(imageFull, 512, nh, true);
+        File f = new File(mImage);
+        if (!f.exists())
+        {
+            mImage = "";
+            return null;
+        }
+        return BitmapFactory.decodeFile(mImage);
 
     }
 
@@ -58,10 +64,14 @@ public class Show {
         if (mBanner.isEmpty() || mBanner == null)
             return null;
 
-        Bitmap imageFull = BitmapFactory.decodeFile(mBanner);
-        int nh = (int) (imageFull.getHeight() * (512.0 / imageFull.getWidth()));
-        return Bitmap.createScaledBitmap(imageFull, 512, nh, true);
+        File f = new File(mBanner);
+        if (!f.exists())
+        {
+            mBanner = "";
+            return null;
+        }
 
+        return BitmapFactory.decodeFile(mBanner);
     }
 
     public String getImage() {return mImage;}

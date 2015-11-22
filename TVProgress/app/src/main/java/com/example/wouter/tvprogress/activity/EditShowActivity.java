@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.wouter.tvprogress.R;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
+import com.example.wouter.tvprogress.model.PicturesUtil;
 import com.example.wouter.tvprogress.model.Show;
 
 import java.util.LinkedList;
@@ -141,7 +142,7 @@ public class EditShowActivity extends AppCompatActivity {
         else
            mDatabaseConnection.executeNonReturn("INSERT INTO shows (title, image ,banner) VALUES ('" + mShow.getTitle() + "', '" + mShow.getImage() + "', '" + mShow.getBanner() + "')");
 
-        if(mShow.getId() != -1) {
+        if(mShow.getId() == -1) {
             Intent mIntent = new Intent(getApplicationContext(), ShowListActivity.class);
             startActivity(mIntent);
         }
@@ -160,17 +161,18 @@ public class EditShowActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && data != null) {
             Uri uri = data.getData();
             String realPath = getRealPathFromURI(uri);
+            String name = getNameFromPath(realPath);
 
-            if (realPath ==""){
-                Toast.makeText(getBaseContext(), "Selecting picture failed", Toast.LENGTH_LONG);
-                return;
-            }
+            PicturesUtil picturesUtil = new PicturesUtil();
+            Bitmap bitmap = BitmapFactory.decodeFile(realPath);
+
+            String newPath = picturesUtil.saveBitmapLowerQuality(name, bitmap);
 
             if (requestCode == PickImageCode)
-                mShow.setImage(realPath);
+                mShow.setImage(newPath);
 
             if (requestCode == PickBannerCode)
-                mShow.setBanner(realPath);
+                mShow.setBanner(newPath);
 
             reloadImages();
         }
@@ -202,14 +204,17 @@ public class EditShowActivity extends AppCompatActivity {
         //This method was deprecated in API level 11
         //Cursor cursor = managedQuery(contentUri, proj, null, null, null);
 
-        CursorLoader cursorLoader = new CursorLoader(
-                this,
-                contentUri, proj, null, null, null);
+        CursorLoader cursorLoader = new CursorLoader( this, contentUri, proj, null, null, null);
         Cursor cursor = cursorLoader.loadInBackground();
 
-        int column_index =
-                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    public String getNameFromPath(String path){
+        int indexExtention = path.lastIndexOf('.');
+        int indexName = path.lastIndexOf('/') +1;
+        return path.substring(indexName, indexExtention);
     }
 }
