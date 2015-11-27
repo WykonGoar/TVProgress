@@ -8,14 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.example.wouter.tvprogress.R;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Wouter on 16-11-2015.

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteStatement;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,8 +80,20 @@ public class DatabaseConnection extends Activity {
         }
     }
 
+    public SQLiteStatement getNewStatement(String query){
+        return mDatabase.compileStatement(query);
+    }
+
     public void executeNonReturn(String query) throws  SQLiteException{
         mDatabase.execSQL(query);
+    }
+
+    public void executeNonReturn(SQLiteStatement statement){
+        statement.execute();
+    }
+
+    public int executeInsertQuery(SQLiteStatement statement){
+        return (int) statement.executeInsert();
     }
 
     public Cursor executeReturn(String query) throws SQLiteException{
@@ -142,8 +155,6 @@ public class DatabaseConnection extends Activity {
         LinkedList<Episode> episodes = new LinkedList<>();
 
         while(!mCursor.isAfterLast()){
-            //id
-            int id = mCursor.getInt(mCursor.getColumnIndex("_id"));
             //showId
             int currentShowId = mCursor.getInt(mCursor.getColumnIndex("showId"));
             //season
@@ -158,7 +169,7 @@ public class DatabaseConnection extends Activity {
             if(iSeen == 1)
                 seen = true;
 
-            Episode newEpisode = new Episode(id, currentShowId, season, episode, title, seen);
+            Episode newEpisode = new Episode(currentShowId, season, episode, title, seen);
             episodes.add(newEpisode);
 
             mCursor.moveToNext();

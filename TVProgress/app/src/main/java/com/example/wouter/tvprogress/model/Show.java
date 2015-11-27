@@ -80,6 +80,8 @@ public class Show {
 
     public String getURL() { return mURL; }
 
+    public void setId (int id) {mId = id;}
+
     public void setTitle(String title) {mTitle = title; }
 
     public void setCurrentSeason(int currentSeason) { mCurrentSeason = currentSeason; }

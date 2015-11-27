@@ -14,7 +14,7 @@
         android:background="#010101">
 
         <ImageView
-            android:layout_width="245dp"
+            android:layout_width="220dp"
             android:layout_height="100dp"
             android:id="@+id/ivBanner"
             android:layout_gravity="center_horizontal"
@@ -37,66 +37,20 @@
         android:background="@android:color/darker_gray"
         android:layout_marginTop="10dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Up to date!"
-        android:id="@+id/tvUpToDate"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        android:textColor="#0ebd00" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Next episode"
-        android:id="@+id/tvNextEpisode"
-        android:layout_gravity="center_horizontal" />
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="false"
-        android:id="@+id/lyNext"
+        android:id="@+id/llEditable"
         android:visibility="visible">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Season: 1 Episode 1"
-            android:id="@+id/tvNext"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Current episode"
+            android:id="@+id/textView8"
             android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Wykon strikes back"
-            android:id="@+id/tvNextTitle"
-            android:layout_gravity="center_horizontal" />
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Current episode"
-        android:id="@+id/tvCurrentEpisode"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/lyEditable"
-        android:visibility="gone"
-        android:background="@drawable/border_black">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -119,10 +73,10 @@
                 android:ems="10"
                 android:id="@+id/etCurrentSeason"
                 android:text="1"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
                 android:layout_weight="10"
-                android:textAlignment="center"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:layout_gravity="center_horizontal"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -156,9 +110,9 @@
                 android:id="@+id/etCurrentEpisode"
                 android:text="1"
                 android:layout_weight="10"
-                android:layout_marginRight="20dp"
-                android:textAlignment="center"
-                android:singleLine="true" />
+                android:layout_marginEnd="20dp"
+                android:singleLine="true"
+                android:layout_gravity="center_horizontal"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -171,26 +125,79 @@
 
     </LinearLayout>
 
-    <View
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_marginTop="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Episodes"
-        android:id="@+id/textView3"
-        android:layout_gravity="center_horizontal" />
-
-    <ExpandableListView
-        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:id="@+id/elvEpisodes"
-        android:background="@drawable/border_black"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp" />
+        android:focusableInTouchMode="false"
+        android:id="@+id/llNext"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Next episode"
+            android:id="@+id/tvNextEpisode"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Up to date!"
+            android:id="@+id/tvUpToDate"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:textColor="#0ebd00" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/llNextEpisode"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Wykon strikes back"
+                android:id="@+id/tvNextTitle"
+                android:layout_gravity="center_horizontal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Season: 1 Episode 1"
+                android:id="@+id/tvNext"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Episodes"
+            android:id="@+id/textView3"
+            android:layout_gravity="center_horizontal" />
+
+        <ExpandableListView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/elvEpisodes"
+            android:background="@drawable/border_black"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,12 +1,15 @@
 package com.example.wouter.tvprogress.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,23 +20,40 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.wouter.tvprogress.R;
+import com.example.wouter.tvprogress.model.API.CallAPIAllShows;
+import com.example.wouter.tvprogress.model.API.ShowResource;
+import com.example.wouter.tvprogress.model.API.WiFiConnection;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.PicturesUtil;
 import com.example.wouter.tvprogress.model.Show;
+import com.example.wouter.tvprogress.model.API.iOnTaskCompleted;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class EditShowActivity extends AppCompatActivity {
+public class EditShowActivity extends AppCompatActivity implements iOnTaskCompleted{
 
     private Show mShow;
     private EditText etTitle;
     private ImageView ivImage;
     private ImageView ivBanner;
+    private TextView tvResource;
+
+    private String selectedImage;
+    private String selectedBanner;
+    private String selectedResource;
+
     private static int PickImageCode = 1;
     private static int PickBannerCode = 2;
+    private static int PickResourceCode = 3;
+
+    private boolean imageChanged = false;
+    private boolean bannerChanged = false;
 
     private DatabaseConnection mDatabaseConnection;
 
@@ -59,6 +79,10 @@ public class EditShowActivity extends AppCompatActivity {
         int showId = mIntent.getIntExtra("id", -1);
         if (showId != -1)
             mShow = getShow(showId);
+
+        selectedImage = mShow.getImage();
+        selectedBanner = mShow.getBanner();
+        selectedResource = mShow.getURL();
 
         etTitle = (EditText) findViewById(R.id.etTitle);
         etTitle.setText(mShow.getTitle());
@@ -95,13 +119,46 @@ public class EditShowActivity extends AppCompatActivity {
             }
         });
 
+        Button bSelectResource = (Button) findViewById(R.id.bSelectResource);
+        bSelectResource.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectResource();
+            }
+        });
+
+        tvResource = (TextView) findViewById(R.id.tvResource);
+        tvResource.setText(mShow.getURL());
+
+        Button bRemoveResource = (Button) findViewById(R.id.bRemoveResource);
+        bRemoveResource.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedResource = "";
+                tvResource.setText("");
+            }
+        });
+
         reloadImages();
     }
 
     private void reloadImages()
     {
-        ivImage.setImageBitmap(mShow.getImageAsImage());
-        ivBanner.setImageBitmap(mShow.getBannerAsImage());
+        try{
+        if(!selectedImage.isEmpty()){
+            Bitmap fullImage = BitmapFactory.decodeFile(selectedImage);
+            int nhImage = (int) (fullImage.getHeight() * (512.0 / fullImage.getWidth()));
+            Bitmap scaledImage = Bitmap.createScaledBitmap(fullImage, 512, nhImage, true);
+            ivImage.setImageBitmap(scaledImage);
+        }
+
+        if(!selectedBanner.isEmpty()){
+            Bitmap fullBanner = BitmapFactory.decodeFile(selectedBanner);
+            int nhBanner = (int) (fullBanner.getHeight() * (512.0 / fullBanner.getWidth()));
+            Bitmap scaledBanner = Bitmap.createScaledBitmap(fullBanner, 512, nhBanner, true);
+            ivBanner.setImageBitmap(scaledBanner);
+        }}
+        catch (Exception e){}
     }
 
     private Show getShow(int showId){
@@ -129,29 +186,85 @@ public class EditShowActivity extends AppCompatActivity {
     }
 
     private void saveShow(){
+        Intent mIntent = new Intent(getApplicationContext(), ShowActivity.class);
+
         mShow.setTitle(etTitle.getText().toString());
 
-        if(mShow.getTitle() == "")
+        //Save pictures
+        PicturesUtil picturesUtil = new PicturesUtil();
+        if(!selectedImage.isEmpty() && imageChanged){
+            if(!mShow.getImage().isEmpty())
+                picturesUtil.removePicture(mShow.getImage());
+
+            String nameImage = getNameFromPath(selectedImage);
+            Bitmap bitmapImage = BitmapFactory.decodeFile(selectedImage);
+            String newImagePath = picturesUtil.saveBitmapLowerQuality(nameImage, bitmapImage);
+
+            mShow.setImage(newImagePath);
+        }
+
+        if(!selectedBanner.isEmpty() && bannerChanged){
+            if(!mShow.getBanner().isEmpty())
+                picturesUtil.removePicture(mShow.getBanner());
+
+            String nameBanner = getNameFromPath(selectedBanner);
+            Bitmap bitmapBanner = BitmapFactory.decodeFile(selectedBanner);
+            String newBannerPath = picturesUtil.saveBitmapLowerQuality(nameBanner, bitmapBanner);
+
+            mShow.setBanner(newBannerPath);
+        }
+
+        if(mShow.getTitle().isEmpty())
         {
-            Toast.makeText(getBaseContext(), "Title must be filled in.", Toast.LENGTH_LONG);
+            Toast.makeText(getBaseContext(), "Title must be filled in.", Toast.LENGTH_LONG).show();
             return;
         }
 
-       if(mShow.getId() != -1)
-            mDatabaseConnection.executeNonReturn("UPDATE shows SET title = '" + mShow.getTitle() + "', image = '" + mShow.getImage() + "', banner = '" + mShow.getBanner() + "' WHERE _id = " + mShow.getId());
-        else
-           mDatabaseConnection.executeNonReturn("INSERT INTO shows (title, image ,banner) VALUES ('" + mShow.getTitle() + "', '" + mShow.getImage() + "', '" + mShow.getBanner() + "')");
+        if(!selectedResource.isEmpty() && (selectedResource != mShow.getURL())) {
+            mIntent.putExtra("newResource", true);
+        }
+        else if(selectedResource.isEmpty() && mShow.getId() != -1){
+            String query = "DELETE FROM episodes WHERE showId = ?";
+            SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+            statement.bindLong(1, mShow.getId());
+            mDatabaseConnection.executeNonReturn(statement);
+        }
 
-        if(mShow.getId() == -1) {
-            Intent mIntent = new Intent(getApplicationContext(), ShowListActivity.class);
-            startActivity(mIntent);
+        mShow.setURL(tvResource.getText().toString());
+
+        SQLiteStatement statement = null;
+       if(mShow.getId() != -1) {
+
+           String query = "UPDATE shows SET title = ?, image = ?, banner = ?, url = ? WHERE _id = ?;";
+            statement = mDatabaseConnection.getNewStatement(query);
+
+           statement.bindLong(5, mShow.getId());
+       }
+        else{
+           String query = "INSERT INTO shows (title, image ,banner, url) VALUES (?, ?, ?, ?)";
+           statement = mDatabaseConnection.getNewStatement(query);
+       }
+
+        statement.bindString(1, mShow.getTitle());
+        statement.bindString(2, mShow.getImage());
+        statement.bindString(3, mShow.getBanner());
+        statement.bindString(4, mShow.getURL());
+
+        if(mShow.getId() != -1) {
+            mDatabaseConnection.executeNonReturn(statement);
         }
         else{
-            Intent mIntent = new Intent(getApplicationContext(), ShowActivity.class);
-            mIntent.putExtra("id", mShow.getId());
-
-            startActivity(mIntent);
+            int newId = mDatabaseConnection.executeInsertQuery(statement);
+            if(newId == -1) {
+                Toast.makeText(this, "Can't add this show.\nTry changing the name.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            mShow.setId(newId);
         }
+
+        mIntent.putExtra("id", mShow.getId());
+        startActivity(mIntent);
+        finish();
     }
 
     @Override
@@ -159,22 +272,30 @@ public class EditShowActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            String realPath = getRealPathFromURI(uri);
-            String name = getNameFromPath(realPath);
 
-            PicturesUtil picturesUtil = new PicturesUtil();
-            Bitmap bitmap = BitmapFactory.decodeFile(realPath);
+            if(requestCode == PickImageCode || requestCode == PickBannerCode) {
+                Uri uri = data.getData();
+                String realPath = getRealPathFromURI(uri);
 
-            String newPath = picturesUtil.saveBitmapLowerQuality(name, bitmap);
+                if (requestCode == PickImageCode) {
+                    selectedImage = realPath;
+                    imageChanged = true;
+                }
 
-            if (requestCode == PickImageCode)
-                mShow.setImage(newPath);
+                if (requestCode == PickBannerCode) {
+                    selectedBanner = realPath;
+                    bannerChanged = true;
+                }
 
-            if (requestCode == PickBannerCode)
-                mShow.setBanner(newPath);
+                reloadImages();
+            }
 
-            reloadImages();
+            if(requestCode == PickResourceCode){
+                String resource = data.getStringExtra("resource");
+                selectedResource = resource;
+                tvResource.setText(resource);
+            }
+
         }
     }
 
@@ -193,16 +314,46 @@ public class EditShowActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if(id == R.id.action_delete){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Remove " + mShow.getTitle() + " ?");
+            builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    String query = "DELETE FROM shows WHERE _id = ?";
+                    SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+                    statement.bindLong(1, mShow.getId());
+                    mDatabaseConnection.executeNonReturn(statement);
 
+                    Toast.makeText(getApplicationContext(), mShow.getTitle() + " removed", Toast.LENGTH_LONG).show();
+
+                    if (!mShow.getImage().isEmpty()) {
+                        File imageFile = new File(mShow.getImage());
+                        imageFile.delete();
+                    }
+
+                    if (!mShow.getBanner().isEmpty()) {
+                        File bannerFile = new File(mShow.getBanner());
+                        bannerFile.delete();
+                    }
+
+                    Intent mIntent = new Intent(getApplicationContext(), ShowListActivity.class);
+
+                    startActivity(mIntent);
+
+                    finish();
+                }
+        });
+            builder.setNegativeButton("Cancel",null);
+            // Create the AlertDialog object and return it
+            Dialog dialog = builder.create();
+            dialog.show();
+        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
+    private String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
-
-        //This method was deprecated in API level 11
-        //Cursor cursor = managedQuery(contentUri, proj, null, null, null);
 
         CursorLoader cursorLoader = new CursorLoader( this, contentUri, proj, null, null, null);
         Cursor cursor = cursorLoader.loadInBackground();
@@ -212,9 +363,52 @@ public class EditShowActivity extends AppCompatActivity {
         return cursor.getString(column_index);
     }
 
-    public String getNameFromPath(String path){
+    private String getNameFromPath(String path){
         int indexExtention = path.lastIndexOf('.');
         int indexName = path.lastIndexOf('/') +1;
+
         return path.substring(indexName, indexExtention);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    private void selectResource(){
+        WiFiConnection wiFiConnection = new WiFiConnection(this);
+
+        if(wiFiConnection.isConnectedToWiFi()) {
+            startCallAPIAllShows();
+        }
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Not connected to WiFi!\nDo you want to use mobile internet?");
+
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    startCallAPIAllShows();
+                }
+            });
+            builder.setNegativeButton("Cancel",null);
+            // Create the AlertDialog object and return it
+            builder.create().show();
+        }
+    }
+
+    private void startCallAPIAllShows(){
+        new CallAPIAllShows(this, this).execute();
+    }
+
+    @Override
+    public void onTaskCompleted(Object values) {
+        if (values != null){
+            if(values.getClass() == ArrayList.class){
+                ArrayList<ShowResource> resourceList = (ArrayList<ShowResource>) values;
+                Intent intent = new Intent(this, SelectShowResourceActivity.class);
+                intent.putParcelableArrayListExtra("resources", resourceList);
+                startActivityForResult(intent, PickResourceCode);
+            }
+        }
     }
 }

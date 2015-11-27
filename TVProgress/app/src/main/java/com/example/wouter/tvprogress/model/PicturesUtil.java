@@ -49,4 +49,9 @@ public class PicturesUtil {
         File path = Environment.getExternalStorageDirectory();
         return path.getAbsolutePath();
     }
+
+    public boolean removePicture(String path){
+        File file = new File(path);
+        return file.delete();
+    }
 }

@@ -11,7 +11,7 @@
     <item
         android:id="@+id/action_new"
         android:title="New"
-        android:icon="@android:drawable/ic_input_add"
+        android:icon="@android:drawable/ic_menu_add"
         app:showAsAction="ifRoom"/>
 
 </menu>

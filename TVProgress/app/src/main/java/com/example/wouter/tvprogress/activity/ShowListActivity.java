@@ -1,22 +1,15 @@
 package com.example.wouter.tvprogress.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.example.wouter.tvprogress.R;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
@@ -71,7 +64,7 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
     }
 
     private void showClicked(int position){
-        Show show = mShows.get(position);
+        Show show = (Show) mShowListAdapter.getItem(position);
 
         Intent mIntent = new Intent(getApplicationContext(), ShowActivity.class);
         mIntent.putExtra("id", show.getId());
@@ -112,5 +105,10 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
     public boolean onQueryTextChange(String newText) {
         mShowListAdapter.getFilter().filter(newText);
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

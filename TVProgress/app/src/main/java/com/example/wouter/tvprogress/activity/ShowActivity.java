@@ -2,6 +2,7 @@ package com.example.wouter.tvprogress.activity;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,10 +14,13 @@ import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
 
 import com.example.wouter.tvprogress.R;
+import com.example.wouter.tvprogress.model.API.CallAPIAllEpisodes;
+import com.example.wouter.tvprogress.model.API.iOnTaskCompleted;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Episode;
 import com.example.wouter.tvprogress.model.EpisodeListAdapter;
@@ -25,11 +29,15 @@ import com.example.wouter.tvprogress.model.Show;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class ShowActivity extends AppCompatActivity {
+public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted {
 
     private LinkedList<Integer> mListDataHeader;
     private HashMap<Integer, LinkedList<Episode>> mListDataChild;
     private Show mShow;
+
+    private LinearLayout llEditable;
+    private LinearLayout llNext;
+    private LinearLayout llNextEpisode;
 
     private TextView tvTitle;
     private TextView tvUpToDate;
@@ -52,6 +60,10 @@ public class ShowActivity extends AppCompatActivity {
         SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
         mDatabaseConnection = new DatabaseConnection(mDatabase, this);
 
+        llEditable = (LinearLayout) findViewById(R.id.llEditable);
+        llNext = (LinearLayout) findViewById(R.id.llNext);
+        llNextEpisode = (LinearLayout) findViewById(R.id.llNextEpisode);
+
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
         etCurrentSeason = (EditText) findViewById(R.id.etCurrentSeason);
@@ -68,15 +80,24 @@ public class ShowActivity extends AppCompatActivity {
 
                 CheckBox cbSeen = (CheckBox) v.findViewById(R.id.cbSeen);
 
+                String query = "";
                 if (selectedEpisode.isSeen()) {
-                    mDatabaseConnection.executeNonReturn("UPDATE episodes SET seen = 0 WHERE _id = " + selectedEpisode.getId());
+                     query = "UPDATE episodes SET seen = 0 WHERE showId = ? AND season = ? AND episode = ?";
+
                     cbSeen.setChecked(false);
                     selectedEpisode.setmSeen(false);
                 } else {
-                    mDatabaseConnection.executeNonReturn("UPDATE episodes SET seen = 1 WHERE _id = " + selectedEpisode.getId());
+                    query = "UPDATE episodes SET seen = 1 WHERE showId = ? AND season = ? AND episode = ?";
+
                     cbSeen.setChecked(true);
                     selectedEpisode.setmSeen(true);
                 }
+
+                SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+                statement.bindLong(1, selectedEpisode.getShowId());
+                statement.bindLong(2, selectedEpisode.getSeason());
+                statement.bindLong(3, selectedEpisode.getEpisode());
+                mDatabaseConnection.executeNonReturn(statement);
 
                 return true;
             }
@@ -99,6 +120,10 @@ public class ShowActivity extends AppCompatActivity {
         });
 
         mShow = getShow(showId);
+
+        boolean newResource =  mIntent.getBooleanExtra("newResource", false);
+        if(newResource)
+            resourceChanged();
 
         loadShow();
     }
@@ -124,30 +149,52 @@ public class ShowActivity extends AppCompatActivity {
 
         if (mShow.getBannerAsImage() != null)
             ivBanner.setImageBitmap(mShow.getBannerAsImage());
-        if(mShow.isUpToDate())
-            tvUpToDate.setVisibility(View.VISIBLE);
 
+        if(!mShow.getURL().isEmpty()){
+            llEditable.setVisibility(View.GONE);
+            llNext.setVisibility(View.VISIBLE);
 
+            if(mShow.isUpToDate()) {
+                llNextEpisode.setVisibility(View.GONE);
+                tvUpToDate.setVisibility(View.VISIBLE);
+            }
 
-        prepareListData();
+            prepareListData();
 
-        if (mListDataHeader != null) {
-            ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
-            expandableListView.setAdapter(expandableListAdapter);
-            expandableListView.expandGroup(0);
+            if (mListDataHeader != null) {
+                ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
+                expandableListView.setAdapter(expandableListAdapter);
+                expandableListView.expandGroup(0);
+            }
         }
+    }
+
+    private Episode getNextEpisode(){
+        String query = "SELECT * FROM episodes WHERE showId = ? AND seen = 0 ";
+
+        return null;
     }
 
     private void nextSeason(){
         mShow.setCurrentSeason(mShow.getCurrentSeason() + 1);
-        mDatabaseConnection.executeNonReturn("UPDATE shows SET currentSeason = " + mShow.getCurrentSeason() + " WHERE _id = " + mShow.getId());
+
+        String query = "UPDATE shows SET currentSeason = ? WHERE _id = ?";
+        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+        statement.bindLong(1, mShow.getCurrentSeason());
+        statement.bindLong(2, mShow.getId());
+        mDatabaseConnection.executeNonReturn(statement);
 
         loadShow();
     }
 
     private void nextEpisode(){
         mShow.setCurrentEpisode(mShow.getCurrentEpisode() + 1);
-        mDatabaseConnection.executeNonReturn("UPDATE shows SET currentEpisode = " + mShow.getCurrentEpisode() + " WHERE _id = " + mShow.getId());
+
+        String query = "UPDATE shows SET currentEpisode = ? WHERE _id = ?";
+        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+        statement.bindLong(1, mShow.getCurrentEpisode());
+        statement.bindLong(2, mShow.getId());
+        mDatabaseConnection.executeNonReturn(statement);
 
         loadShow();
     }
@@ -182,6 +229,15 @@ public class ShowActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onTaskCompleted(Object values) {
+        loadShow();
+    }
+
+    private void resourceChanged(){
+        new CallAPIAllEpisodes(this, this, mShow.getId(), mShow.getURL()).execute();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_show, menu);
@@ -205,5 +261,10 @@ public class ShowActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

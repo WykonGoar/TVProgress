@@ -5,7 +5,6 @@ package com.example.wouter.tvprogress.model;
  */
 public class Episode {
 
-    private int mId;
     private int mShowId;
     private int mSeason;
     private int mEpisode;
@@ -16,8 +15,7 @@ public class Episode {
         mShowId = showId;
     }
 
-    public Episode(int id, int showId, int season, int episode, String title, boolean seen) {
-        this.mId = id;
+    public Episode(int showId, int season, int episode, String title, boolean seen) {
         this.mShowId = showId;
         this.mSeason = season;
         this.mEpisode = episode;
@@ -25,7 +23,7 @@ public class Episode {
         this.mSeen = seen;
     }
 
-    public int getId() { return mId; }
+    public int getShowId() { return mShowId; }
 
     public int getSeason() { return mSeason; }
 
@@ -35,11 +33,11 @@ public class Episode {
 
     public boolean isSeen() { return mSeen; }
 
-    public void setmSeason(int season) { this.mSeason = season; }
+    public void setSeason(int season) { this.mSeason = season; }
 
-    public void setmEpisode(int episode) { this.mEpisode = episode; }
+    public void setEpisode(int episode) { this.mEpisode = episode; }
 
-    public void setmTitle(String title) { this.mTitle = title; }
+    public void setTitle(String title) { this.mTitle = title; }
 
     public void setmSeen(boolean seen) { this.mSeen = seen; }
 }
