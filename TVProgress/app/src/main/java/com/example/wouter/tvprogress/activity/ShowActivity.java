@@ -35,6 +35,9 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
     private HashMap<Integer, LinkedList<Episode>> mListDataChild;
     private Show mShow;
 
+    private TextView tvNextTitle;
+    private TextView tvNext;
+
     private LinearLayout llEditable;
     private LinearLayout llNext;
     private LinearLayout llNextEpisode;
@@ -59,6 +62,9 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
         SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
         mDatabaseConnection = new DatabaseConnection(mDatabase, this);
+
+        tvNextTitle = (TextView) findViewById(R.id.tvNextTitle);
+        tvNext = (TextView) findViewById(R.id.tvNext);
 
         llEditable = (LinearLayout) findViewById(R.id.llEditable);
         llNext = (LinearLayout) findViewById(R.id.llNext);
@@ -99,8 +105,12 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
                 statement.bindLong(3, selectedEpisode.getEpisode());
                 mDatabaseConnection.executeNonReturn(statement);
 
+                getNextEpisode();
+
                 return true;
             }
+
+            private void update
         });
 
         Button bNextSeason = (Button) findViewById(R.id.bNextSeason);
@@ -153,6 +163,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         if(!mShow.getURL().isEmpty()){
             llEditable.setVisibility(View.GONE);
             llNext.setVisibility(View.VISIBLE);
+            getNextEpisode();
 
             if(mShow.isUpToDate()) {
                 llNextEpisode.setVisibility(View.GONE);
@@ -169,10 +180,11 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         }
     }
 
-    private Episode getNextEpisode(){
-        String query = "SELECT * FROM episodes WHERE showId = ? AND seen = 0 ";
+    private void getNextEpisode(){
+        Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
 
-        return null;
+        tvNextTitle.setText(nextEpisode.getTitle());
+        tvNext.setText("Season: " + nextEpisode.getSeason() + "   Episode: " + nextEpisode.getEpisode());
     }
 
     private void nextSeason(){
@@ -198,6 +210,8 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
         loadShow();
     }
+
+    private void update
 
     private void prepareListData() {
         LinkedList<Episode> episodes = mDatabaseConnection.getEpisodes(mShow.getId());

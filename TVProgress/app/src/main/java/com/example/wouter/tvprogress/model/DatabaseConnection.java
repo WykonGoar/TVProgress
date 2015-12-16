@@ -141,10 +141,40 @@ public class DatabaseConnection extends Activity {
         return  shows;
     }
 
+    public Episode getNextpisode(int showId){
+        String query = "SELECT * FROM episodes WHERE showId = " + showId + " AND seen = 0 ORDER BY season DESC, episode DESC";
+        Cursor mCursor = null;
+
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        mCursor.moveToLast();
+
+        //showId
+        int currentShowId = mCursor.getInt(mCursor.getColumnIndex("showId"));
+        //season
+        int season = mCursor.getInt(mCursor.getColumnIndex("season"));
+        //episode
+        int episode = mCursor.getInt(mCursor.getColumnIndex("episode"));
+        //title
+        String title = mCursor.getString(mCursor.getColumnIndex("title"));
+        //seen
+        int iSeen = mCursor.getInt(mCursor.getColumnIndex("seen"));
+        Boolean seen = false;
+        if(iSeen == 1)
+            seen = true;
+
+        Episode nextEpisode = new Episode(currentShowId, season, episode, title, seen);
+        return nextEpisode;
+    }
+
     public LinkedList<Episode> getEpisodes(int showId)
     {
         String query = "SELECT * FROM episodes WHERE showId = " + showId + " ORDER BY season DESC, episode DESC";
         Cursor mCursor = null;
+
         try {
             mCursor = executeReturn(query);
         } catch (SQLiteException e) {
