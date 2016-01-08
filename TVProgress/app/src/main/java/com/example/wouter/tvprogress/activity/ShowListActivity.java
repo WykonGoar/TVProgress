@@ -12,13 +12,16 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.example.wouter.tvprogress.R;
+import com.example.wouter.tvprogress.model.API.CallAPIAllEpisodes;
+import com.example.wouter.tvprogress.model.API.CallAPIAllShows;
+import com.example.wouter.tvprogress.model.API.iOnTaskCompleted;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Show;
 import com.example.wouter.tvprogress.model.ShowListAdapter;
 
 import java.util.LinkedList;
 
-public class ShowListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class ShowListActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, iOnTaskCompleted {
 
     private LinkedList<Show> mShows = new LinkedList<>();
 
@@ -47,6 +50,9 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
 
         mSearchView = (SearchView) findViewById(R.id.searchView);
         mSearchView.setOnQueryTextListener(this);
+
+        loadShows();
+        ReloadEpisodeList();
     }
 
     private void loadShows(){
@@ -92,9 +98,22 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
             startActivity(mIntent);
         }
 
+        if(id == R.id.action_reload)
+        {
+            ReloadEpisodeList();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
+    private void ReloadEpisodeList(){
+        for(Show show : mShows){
+            if(show.getURL() != "")
+            {
+                new CallAPIAllEpisodes(this, this, show.getId(), show.getURL()).execute();
+            }
+        }
+    }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -110,5 +129,11 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    @Override
+    public void onTaskCompleted(Object values) {
+        loadShows();
+        System.out.println("Reloaded");
     }
 }

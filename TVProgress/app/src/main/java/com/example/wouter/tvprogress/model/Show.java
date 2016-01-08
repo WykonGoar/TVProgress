@@ -98,13 +98,12 @@ public class Show {
 
     public void setURL(String url) { this.mURL = url; }
 
-    public boolean isUpToDate(){
-        if(mLastSeason != -1
+    public boolean isUpToDate() {
+        if (mLastSeason != -1
                 && mLastEpisode != -1
                 && mCurrentSeason == mLastSeason
-                && mCurrentEpisode == mLastEpisode)
-        {
-                return true;
+                && mCurrentEpisode == mLastEpisode) {
+            return true;
         }
         return false;
     }

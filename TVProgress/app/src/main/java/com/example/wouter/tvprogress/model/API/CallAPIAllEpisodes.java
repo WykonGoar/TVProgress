@@ -86,6 +86,10 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
     public void readEpisodesArray(JSONArray rootObject) {
         ArrayList<Episode> episodes = new ArrayList<Episode>();
 
+        String queryDelete = "DELETE FROM episodes WHERE showId = ?";
+        SQLiteStatement statementDelete = mDatabaseConnection.getNewStatement(queryDelete);
+        statementDelete.bindLong(1, mShowId);
+        mDatabaseConnection.executeNonReturn(statementDelete);
 
         try {
             for(int i=0; i < rootObject.length(); i++) {
@@ -96,14 +100,13 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                 String title = jsonResource.getString("title");
                 title = title.replace("'", "\'");
 
-
-                String query = "INSERT INTO episodes VALUES(?, ?, ?, ?, 0)";
-                SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-                statement.bindLong(1, mShowId);
-                statement.bindLong(2, season);
-                statement.bindLong(3, episode);
-                statement.bindString(4, title);
-                mDatabaseConnection.executeNonReturn(statement);
+                String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, 0)";
+                SQLiteStatement statementInsert = mDatabaseConnection.getNewStatement(queryInsert);
+                statementInsert.bindLong(1, mShowId);
+                statementInsert.bindLong(2, season);
+                statementInsert.bindLong(3, episode);
+                statementInsert.bindString(4, title);
+                mDatabaseConnection.executeInsertQuery(statementInsert);
             }
         } catch (JSONException | SQLiteException ex){
             System.out.println(ex.getMessage());

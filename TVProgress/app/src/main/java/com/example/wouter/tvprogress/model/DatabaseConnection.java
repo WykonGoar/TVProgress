@@ -96,6 +96,10 @@ public class DatabaseConnection extends Activity {
         return (int) statement.executeInsert();
     }
 
+    public  int executeUpdateQuery(SQLiteStatement statement){
+        return statement.executeUpdateDelete();
+    }
+
     public Cursor executeReturn(String query) throws SQLiteException{
         return mDatabase.rawQuery(query, null);
     }
@@ -142,7 +146,7 @@ public class DatabaseConnection extends Activity {
     }
 
     public Episode getNextpisode(int showId){
-        String query = "SELECT * FROM episodes WHERE showId = " + showId + " AND seen = 0 ORDER BY season DESC, episode DESC";
+        String query = "SELECT * FROM episodes WHERE showId = " + showId + " AND seen = 0 ORDER BY season, episode";
         Cursor mCursor = null;
 
         try {
@@ -150,7 +154,42 @@ public class DatabaseConnection extends Activity {
         } catch (SQLiteException e) {
             e.printStackTrace();
         }
-        mCursor.moveToLast();
+        mCursor.moveToFirst();
+
+        if(mCursor.getCount() == 0)
+            return  null;
+
+        //showId
+        int currentShowId = mCursor.getInt(mCursor.getColumnIndex("showId"));
+        //season
+        int season = mCursor.getInt(mCursor.getColumnIndex("season"));
+        //episode
+        int episode = mCursor.getInt(mCursor.getColumnIndex("episode"));
+        //title
+        String title = mCursor.getString(mCursor.getColumnIndex("title"));
+        //seen
+        int iSeen = mCursor.getInt(mCursor.getColumnIndex("seen"));
+        Boolean seen = false;
+        if(iSeen == 1)
+            seen = true;
+
+        Episode nextEpisode = new Episode(currentShowId, season, episode, title, seen);
+        return nextEpisode;
+    }
+
+    public Episode getLastSeenEpisode(int showId){
+        String query = "SELECT * FROM episodes WHERE showId = " + showId + " AND seen = 1 ORDER BY season DESC, episode DESC";
+        Cursor mCursor = null;
+
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        mCursor.moveToFirst();
+
+        if(mCursor.getCount() == 0)
+            return  null;
 
         //showId
         int currentShowId = mCursor.getInt(mCursor.getColumnIndex("showId"));

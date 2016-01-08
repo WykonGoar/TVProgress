@@ -1,6 +1,7 @@
 package com.example.wouter.tvprogress.model;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +24,16 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
     private LinkedList<Show> mShows;
     private LinkedList<Show> mShowFilterList;
     private ValueFilter valueFilter;
+    private DatabaseConnection mDatabaseConnection;
 
     public ShowListAdapter(Context context, LinkedList<Show> shows) {
         mContext = context;
         mShows = shows;
         mShowFilterList = shows;
+
+
+        SQLiteDatabase mDatabase = context.openOrCreateDatabase("TVProgressDB", context.MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(mDatabase, context);
     }
 
     @Override
@@ -60,8 +66,24 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
         if (show.getImageAsImage() != null)
             ivShow.setImageBitmap(show.getImageAsImage());
         tvTitle.setText(show.getTitle());
-        tvCurrentSeason.setText("Season: " + show.getCurrentSeason());
-        tvCurrentEpisode.setText("Episode: " + show.getCurrentEpisode());
+
+        if(show.getURL() != ""){
+            Episode lastSeenEpisode = mDatabaseConnection.getLastSeenEpisode(show.getId());
+
+            if(lastSeenEpisode != null) {
+                tvCurrentSeason.setText("Season: " + lastSeenEpisode.getSeason());
+                tvCurrentEpisode.setText("Episode: " + lastSeenEpisode.getEpisode());
+            }
+            else
+            {
+                tvCurrentSeason.setText("Season: 1");
+                tvCurrentEpisode.setText("Episode: 0");
+            }
+        }
+        else {
+            tvCurrentSeason.setText("Season: " + show.getCurrentSeason());
+            tvCurrentEpisode.setText("Episode: " + show.getCurrentEpisode());
+        }
 
         return  rowView;
     }

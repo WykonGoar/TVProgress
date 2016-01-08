@@ -109,8 +109,6 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
                 return true;
             }
-
-            private void update
         });
 
         Button bNextSeason = (Button) findViewById(R.id.bNextSeason);
@@ -183,8 +181,10 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
     private void getNextEpisode(){
         Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
 
-        tvNextTitle.setText(nextEpisode.getTitle());
-        tvNext.setText("Season: " + nextEpisode.getSeason() + "   Episode: " + nextEpisode.getEpisode());
+        if(nextEpisode != null) {
+            tvNextTitle.setText(nextEpisode.getTitle());
+            tvNext.setText("Season: " + nextEpisode.getSeason() + "   Episode: " + nextEpisode.getEpisode());
+        }
     }
 
     private void nextSeason(){
@@ -210,8 +210,6 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
         loadShow();
     }
-
-    private void update
 
     private void prepareListData() {
         LinkedList<Episode> episodes = mDatabaseConnection.getEpisodes(mShow.getId());
