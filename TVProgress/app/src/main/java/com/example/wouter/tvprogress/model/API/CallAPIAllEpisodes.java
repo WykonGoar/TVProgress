@@ -86,11 +86,6 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
     public void readEpisodesArray(JSONArray rootObject) {
         ArrayList<Episode> episodes = new ArrayList<Episode>();
 
-        String queryDelete = "DELETE FROM episodes WHERE showId = ?";
-        SQLiteStatement statementDelete = mDatabaseConnection.getNewStatement(queryDelete);
-        statementDelete.bindLong(1, mShowId);
-        mDatabaseConnection.executeNonReturn(statementDelete);
-
         try {
             for(int i=0; i < rootObject.length(); i++) {
                 JSONObject jsonResource = rootObject.getJSONObject(i);
@@ -100,13 +95,27 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                 String title = jsonResource.getString("title");
                 title = title.replace("'", "\'");
 
-                String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, 0)";
-                SQLiteStatement statementInsert = mDatabaseConnection.getNewStatement(queryInsert);
-                statementInsert.bindLong(1, mShowId);
-                statementInsert.bindLong(2, season);
-                statementInsert.bindLong(3, episode);
-                statementInsert.bindString(4, title);
-                mDatabaseConnection.executeInsertQuery(statementInsert);
+                String queryUpdate = "UPDATE episodes SET title = ? WHERE showId = ? AND season = ? AND episode = ?";
+                SQLiteStatement statementUpdate = mDatabaseConnection.getNewStatement(queryUpdate);
+                statementUpdate.bindString(1, title);
+                statementUpdate.bindLong(2, mShowId);
+                statementUpdate.bindLong(3, season);
+                statementUpdate.bindLong(4, episode);
+                int updateResult =  mDatabaseConnection.executeInsertQuery(statementUpdate);
+
+                System.out.println("ShowId = " + mShowId + " Episode " + season + " Episode " + episode + " Update Result = " + updateResult);
+
+                if(updateResult == -1) {
+                    String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, 0)";
+                    SQLiteStatement statementInsert = mDatabaseConnection.getNewStatement(queryInsert);
+                    statementInsert.bindLong(1, mShowId);
+                    statementInsert.bindLong(2, season);
+                    statementInsert.bindLong(3, episode);
+                    statementInsert.bindString(4, title);
+                    int insertResult = mDatabaseConnection.executeInsertQuery(statementInsert);
+
+                    System.out.println("ShowId = " + mShowId + " Episode " + season + " Episode " + episode + " Insert result = " + insertResult);
+                }
             }
         } catch (JSONException | SQLiteException ex){
             System.out.println(ex.getMessage());

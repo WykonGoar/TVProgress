@@ -241,6 +241,8 @@ public class DatabaseConnection extends Activity {
             Episode newEpisode = new Episode(currentShowId, season, episode, title, seen);
             episodes.add(newEpisode);
 
+            System.out.println("Season " + season + " episode " + episode);
+
             mCursor.moveToNext();
         }
 

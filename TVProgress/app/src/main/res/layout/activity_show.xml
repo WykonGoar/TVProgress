@@ -173,6 +173,13 @@
                 android:text="Season: 1 Episode 1"
                 android:id="@+id/tvNext"
                 android:layout_gravity="center_horizontal" />
+
+            <Button
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:text="Seen"
+                android:id="@+id/bSeenNextEpisode"
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
         <View
