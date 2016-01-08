@@ -177,7 +177,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         if(!mShow.getURL().isEmpty()){
             llEditable.setVisibility(View.GONE);
             llNext.setVisibility(View.VISIBLE);
-            getNextEpisode();
+            Episode nextEpisode = getNextEpisode();
 
             if(mShow.isUpToDate()) {
                 llNextEpisode.setVisibility(View.GONE);
@@ -189,17 +189,22 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
             if (mListDataHeader != null) {
                 ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
                 expandableListView.setAdapter(expandableListAdapter);
+
+                int index = mListDataHeader.indexOf(nextEpisode.getSeason());
+                expandableListView.expandGroup(index);
             }
         }
     }
 
-    private void getNextEpisode(){
+    private Episode getNextEpisode(){
         Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
 
         if(nextEpisode != null) {
             tvNextTitle.setText(nextEpisode.getTitle());
             tvNext.setText("Season: " + nextEpisode.getSeason() + "   Episode: " + nextEpisode.getEpisode());
         }
+
+        return nextEpisode;
     }
 
     private void seenNextEpisode(){
@@ -256,7 +261,6 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
             if (!mListDataHeader.contains(currentSeason)){
                 mListDataHeader.add(currentSeason);
-                System.out.println("new season " + currentSeason);
                 newEpisodesList = new LinkedList<Episode>();
             }
             else {

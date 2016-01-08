@@ -62,7 +62,6 @@ public class EpisodeListAdapter extends BaseExpandableListAdapter {
         TextView lblListHeader = (TextView) convertView.findViewById(R.id.tvTitle);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText("Season " + headerTitle);
-        System.out.println("New group " + headerTitle);
 
         return convertView;
     }
