@@ -92,26 +92,29 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
 
                 int season = jsonResource.getInt("season");
                 int episode = jsonResource.getInt("number");
+                String release_date = jsonResource.getString("release_date");
                 String title = jsonResource.getString("title");
                 title = title.replace("'", "\'");
 
-                String queryUpdate = "UPDATE episodes SET title = ? WHERE showId = ? AND season = ? AND episode = ?";
+                String queryUpdate = "UPDATE episodes SET title = ?, release_date = ? WHERE showId = ? AND season = ? AND episode = ?";
                 SQLiteStatement statementUpdate = mDatabaseConnection.getNewStatement(queryUpdate);
                 statementUpdate.bindString(1, title);
-                statementUpdate.bindLong(2, mShowId);
-                statementUpdate.bindLong(3, season);
-                statementUpdate.bindLong(4, episode);
+                statementUpdate.bindString(2, release_date);
+                statementUpdate.bindLong(3, mShowId);
+                statementUpdate.bindLong(4, season);
+                statementUpdate.bindLong(5, episode);
                 int updateResult =  mDatabaseConnection.executeInsertQuery(statementUpdate);
 
                 System.out.println("ShowId = " + mShowId + " Episode " + season + " Episode " + episode + " Update Result = " + updateResult);
 
                 if(updateResult == -1) {
-                    String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, 0)";
+                    String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, ?, 0)";
                     SQLiteStatement statementInsert = mDatabaseConnection.getNewStatement(queryInsert);
                     statementInsert.bindLong(1, mShowId);
                     statementInsert.bindLong(2, season);
                     statementInsert.bindLong(3, episode);
                     statementInsert.bindString(4, title);
+                    statementInsert.bindString(5, release_date);
                     int insertResult = mDatabaseConnection.executeInsertQuery(statementInsert);
 
                     System.out.println("ShowId = " + mShowId + " Episode " + season + " Episode " + episode + " Insert result = " + insertResult);

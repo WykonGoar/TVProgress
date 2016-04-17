@@ -4,27 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <CheckBox
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/cbSeen"
-        android:checked="false"
-        android:paddingRight="2dp"
-        android:focusable="false"
-        android:clickable="false"
-        android:enabled="true" />
+        android:paddingEnd="2dp"
+        android:src="@drawable/abc_btn_check_to_on_mtrl_000" />
 
     <TextView
-        android:layout_width="105dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Episode 40"
+        android:text="E 40"
         android:id="@+id/tvEpisode"
         android:textAlignment="center"
-        android:paddingRight="15dp" />
+        android:paddingEnd="15dp" />
 
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Age of Wykon"

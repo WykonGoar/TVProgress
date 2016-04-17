@@ -1,5 +1,7 @@
 package com.example.wouter.tvprogress.activity;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -17,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.Toast;
 
 import com.example.wouter.tvprogress.R;
 import com.example.wouter.tvprogress.model.API.CallAPIAllEpisodes;
@@ -31,6 +35,7 @@ import java.util.LinkedList;
 
 public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted {
 
+    private Context mContext;
     private LinkedList<Integer> mListDataHeader;
     private HashMap<Integer, LinkedList<Episode>> mListDataChild;
     private Show mShow;
@@ -54,6 +59,8 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
+
+        mContext = this;
 
         Intent mIntent = getIntent();
         int showId = mIntent.getIntExtra("id", -1);
@@ -85,18 +92,18 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
                 int groupValue = mListDataHeader.get(groupPosition);
                 Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
 
-                CheckBox cbSeen = (CheckBox) v.findViewById(R.id.cbSeen);
+                ImageView ivCheckbox = (ImageView) v.findViewById(R.id.cbSeen);
 
                 String query = "";
                 if (selectedEpisode.isSeen()) {
                      query = "UPDATE episodes SET seen = 0 WHERE showId = ? AND season = ? AND episode = ?";
 
-                    cbSeen.setChecked(false);
+                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_000);
                     selectedEpisode.setmSeen(false);
                 } else {
                     query = "UPDATE episodes SET seen = 1 WHERE showId = ? AND season = ? AND episode = ?";
 
-                    cbSeen.setChecked(true);
+                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_015);
                     selectedEpisode.setmSeen(true);
                 }
 
@@ -109,6 +116,32 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
                 getNextEpisode();
 
                 return true;
+            }
+        });
+
+        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int itemType = ExpandableListView.getPackedPositionType(id);
+
+                if ( itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+                    int childPosition = ExpandableListView.getPackedPositionChild(id);
+                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+
+                    int groupValue = mListDataHeader.get(groupPosition);
+                    Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                    builder.setMessage("Release date: " + selectedEpisode.getReleaseDate());
+                    builder.setTitle("Release date");
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    return  true;
+                }
+
+                return  false;
             }
         });
 
@@ -179,7 +212,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
             llNext.setVisibility(View.VISIBLE);
             Episode nextEpisode = getNextEpisode();
 
-            if(mShow.isUpToDate()) {
+            if(nextEpisode == null) {
                 llNextEpisode.setVisibility(View.GONE);
                 tvUpToDate.setVisibility(View.VISIBLE);
             }
@@ -190,7 +223,9 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
                 ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
                 expandableListView.setAdapter(expandableListAdapter);
 
-                int index = mListDataHeader.indexOf(nextEpisode.getSeason());
+                int index = 0;
+                if(nextEpisode != null)
+                    index = mListDataHeader.indexOf(nextEpisode.getSeason());
                 expandableListView.expandGroup(index);
             }
         }

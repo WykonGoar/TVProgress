@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.wouter.tvprogress.R;
@@ -88,15 +89,18 @@ public class EpisodeListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.episode_row, null);
         }
 
-        CheckBox cbSeen = (CheckBox) convertView.findViewById(R.id.cbSeen);
+        ImageView cbSeen = (ImageView) convertView.findViewById(R.id.cbSeen);
         TextView tvEpisode = (TextView) convertView.findViewById(R.id.tvEpisode);
         TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
 
         Episode episode = (Episode) getChild(groupPosition, childPosition);
 
-        cbSeen.setChecked(episode.isSeen());
+        if (episode.isSeen())
+            cbSeen.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_015);
+        else
+            cbSeen.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_000);
 
-        tvEpisode.setText("Episode " + episode.getEpisode());
+        tvEpisode.setText("E " + episode.getEpisode());
         tvTitle.setText("" + episode.getTitle());
 
         return convertView;

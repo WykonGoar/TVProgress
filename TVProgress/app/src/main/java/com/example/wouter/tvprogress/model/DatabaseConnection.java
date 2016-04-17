@@ -167,13 +167,15 @@ public class DatabaseConnection extends Activity {
         int episode = mCursor.getInt(mCursor.getColumnIndex("episode"));
         //title
         String title = mCursor.getString(mCursor.getColumnIndex("title"));
+        //release date
+        String releaseDate = mCursor.getString(mCursor.getColumnIndex("release_date"));
         //seen
         int iSeen = mCursor.getInt(mCursor.getColumnIndex("seen"));
         Boolean seen = false;
         if(iSeen == 1)
             seen = true;
 
-        Episode nextEpisode = new Episode(currentShowId, season, episode, title, seen);
+        Episode nextEpisode = new Episode(currentShowId, season, episode, title, releaseDate, seen);
         return nextEpisode;
     }
 
@@ -199,13 +201,15 @@ public class DatabaseConnection extends Activity {
         int episode = mCursor.getInt(mCursor.getColumnIndex("episode"));
         //title
         String title = mCursor.getString(mCursor.getColumnIndex("title"));
+        //release date
+        String releaseDate = mCursor.getString(mCursor.getColumnIndex("release_date"));
         //seen
         int iSeen = mCursor.getInt(mCursor.getColumnIndex("seen"));
         Boolean seen = false;
         if(iSeen == 1)
             seen = true;
 
-        Episode nextEpisode = new Episode(currentShowId, season, episode, title, seen);
+        Episode nextEpisode = new Episode(currentShowId, season, episode, title, releaseDate, seen);
         return nextEpisode;
     }
 
@@ -232,13 +236,15 @@ public class DatabaseConnection extends Activity {
             int episode = mCursor.getInt(mCursor.getColumnIndex("episode"));
             //title
             String title = mCursor.getString(mCursor.getColumnIndex("title"));
+            //release date
+            String releaseDate = mCursor.getString(mCursor.getColumnIndex("release_date"));
             //seen
             int iSeen = mCursor.getInt(mCursor.getColumnIndex("seen"));
             Boolean seen = false;
             if(iSeen == 1)
                 seen = true;
 
-            Episode newEpisode = new Episode(currentShowId, season, episode, title, seen);
+            Episode newEpisode = new Episode(currentShowId, season, episode, title, releaseDate, seen);
             episodes.add(newEpisode);
 
             System.out.println("Season " + season + " episode " + episode);

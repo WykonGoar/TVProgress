@@ -9,18 +9,20 @@ public class Episode {
     private int mSeason;
     private int mEpisode;
     private String mTitle;
+    private String mReleaseDate;
     private boolean mSeen = false;
 
     public Episode(int showId){
         mShowId = showId;
     }
 
-    public Episode(int showId, int season, int episode, String title, boolean seen) {
-        this.mShowId = showId;
-        this.mSeason = season;
-        this.mEpisode = episode;
-        this.mTitle = title;
-        this.mSeen = seen;
+    public Episode(int showId, int season, int episode, String title, String releaseDate, boolean seen) {
+        mShowId = showId;
+        mSeason = season;
+        mEpisode = episode;
+        mTitle = title;
+        mReleaseDate = releaseDate;
+        mSeen = seen;
     }
 
     public int getShowId() { return mShowId; }
@@ -31,13 +33,17 @@ public class Episode {
 
     public String getTitle() { return mTitle; }
 
+    public String getReleaseDate() {return  mReleaseDate; }
+
     public boolean isSeen() { return mSeen; }
 
-    public void setSeason(int season) { this.mSeason = season; }
+    public void setSeason(int season) { mSeason = season; }
 
-    public void setEpisode(int episode) { this.mEpisode = episode; }
+    public void setEpisode(int episode) { mEpisode = episode; }
 
-    public void setTitle(String title) { this.mTitle = title; }
+    public void setTitle(String title) { mTitle = title; }
 
-    public void setmSeen(boolean seen) { this.mSeen = seen; }
+    public void setReleaseDate(String releaseDate){ mReleaseDate = releaseDate; }
+
+    public void setmSeen(boolean seen) { mSeen = seen; }
 }
