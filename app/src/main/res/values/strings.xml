@@ -10,4 +10,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_select_episode_resource">Select episode resource</string>
     <string name="title_activity_select_episodes_resource">Select episodes resource</string>
+
+    <string name="preference_file">Default</string>
+    <string name="access_token_string">access_token</string>
+    <string name="access_token_time">access_token_time</string>
 </resources>

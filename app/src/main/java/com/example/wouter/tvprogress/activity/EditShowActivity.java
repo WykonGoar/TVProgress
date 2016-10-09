@@ -376,10 +376,16 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
     }
 
     private void selectResource(){
+        final String givenTitle = etTitle.getText().toString();
+        if(givenTitle.isEmpty()){
+            Toast.makeText(EditShowActivity.this, "No title selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         WiFiConnection wiFiConnection = new WiFiConnection(this);
 
         if(wiFiConnection.isConnectedToWiFi()) {
-            startCallAPIAllShows();
+            startCallAPIAllShows(givenTitle);
         }
         else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -387,7 +393,7 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
 
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    startCallAPIAllShows();
+                    startCallAPIAllShows(givenTitle);
                 }
             });
             builder.setNegativeButton("Cancel",null);
@@ -396,8 +402,8 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         }
     }
 
-    private void startCallAPIAllShows(){
-        new CallAPIAllShows(this, this).execute();
+    private void startCallAPIAllShows(String title){
+        new CallAPIAllShows(this, this, title).execute();
     }
 
     @Override
@@ -409,6 +415,9 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
                 intent.putParcelableArrayListExtra("resources", resourceList);
                 startActivityForResult(intent, PickResourceCode);
             }
+        }
+        else{
+            Toast.makeText(this, "No resources found.", Toast.LENGTH_LONG).show();
         }
     }
 }

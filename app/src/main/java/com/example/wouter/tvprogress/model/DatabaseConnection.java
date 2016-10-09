@@ -96,11 +96,11 @@ public class DatabaseConnection extends Activity {
         return (int) statement.executeInsert();
     }
 
-    public  int executeUpdateQuery(SQLiteStatement statement){
+    public int executeUpdateQuery(SQLiteStatement statement){
         return statement.executeUpdateDelete();
     }
 
-    public Cursor executeReturn(String query) throws SQLiteException{
+    public Cursor executeReturn(String query) throws SQLiteException {
         return mDatabase.rawQuery(query, null);
     }
 

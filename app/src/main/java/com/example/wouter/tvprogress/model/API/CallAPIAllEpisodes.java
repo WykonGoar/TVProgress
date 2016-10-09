@@ -24,13 +24,15 @@ import java.util.Iterator;
  * Created by Wouter on 24-11-2015.
  */
 public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
-
+    private Context mContext;
     private int mShowId;
     private String urlString;
     private iOnTaskCompleted mCurrentActivity;
     private DatabaseConnection mDatabaseConnection;
+    private String mToken;
 
     public CallAPIAllEpisodes(Context context, iOnTaskCompleted currentActivity, int showId, String resource){
+        mContext = context;
         mShowId = showId;
         mCurrentActivity = currentActivity;
         urlString = resource;
@@ -41,41 +43,16 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
 
     @Override
     protected Boolean doInBackground(Integer... params) {
-        BufferedReader reader = null;
-        ArrayList<Episode> result = null;
-        // HTTP Get
-        try {
-            URL url = new URL(urlString);
+        CallAPIAccessToken mCallAPIAccessToken = new CallAPIAccessToken(mContext);
+        mToken = mCallAPIAccessToken.GetAccessToken();
 
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;
+        System.out.println("Token = " + mToken);
+        if(mToken.isEmpty()){
+            System.err.println("Token empty");
+            return null;
         }
 
-        try {
-            StringBuilder responseStrBuilder = new StringBuilder();
-
-            String inputStr;
-            while ((inputStr = reader.readLine()) != null)
-                responseStrBuilder.append(inputStr);
-
-            String jsonString = responseStrBuilder.toString();
-            JSONObject root = new JSONObject(jsonString);
-
-            for (Iterator iterator = root.keys(); iterator.hasNext(); ) {
-                String key = (String) iterator.next();
-                JSONArray season = root.getJSONArray(key);
-                readEpisodesArray(season);
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        return true;
+        return getEpisodesArray("1");
     }
 
     @Override
@@ -83,17 +60,70 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         mCurrentActivity.onTaskCompleted(true);
     }
 
-    public void readEpisodesArray(JSONArray rootObject) {
+    public boolean getEpisodesArray(String page){
+        BufferedReader reader = null;
+        ArrayList<Episode> result = null;
+        // HTTP Get
+        try {
+            URL url = new URL(urlString);
+
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Authorization", "Bearer " + mToken);
+            urlConnection.setRequestProperty("Page", page);
+
+            int responseCode = urlConnection.getResponseCode();
+            if(responseCode == 401) {
+                System.err.println("Get shows : Not Authorized");
+                return false;
+            }
+            else if(responseCode == 404) {
+                System.err.println("Get shows : Not found");
+                return false;
+            }
+
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+        } catch (Exception e ){
+            System.err.println(e);
+            System.err.println("Raise exception : " + e.getMessage());
+            return false;
+        }
+
+        try{
+            StringBuilder responseStrBuilder = new StringBuilder();
+
+            String inputStr;
+            while ((inputStr = reader.readLine()) != null)
+                responseStrBuilder.append(inputStr);
+
+            readEpisodesArray(responseStrBuilder.toString());
+        } catch(Exception ex){
+            System.err.println(ex.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    public void readEpisodesArray(String jsonString) {
         ArrayList<Episode> episodes = new ArrayList<Episode>();
+        String newPage = null;
 
         try {
-            for(int i=0; i < rootObject.length(); i++) {
-                JSONObject jsonResource = rootObject.getJSONObject(i);
+            JSONObject jsonResource = new JSONObject(jsonString);
 
-                int season = jsonResource.getInt("season");
-                int episode = jsonResource.getInt("number");
-                String release_date = jsonResource.getString("release_date");
-                String title = jsonResource.getString("title");
+            newPage = jsonResource.getJSONObject("links").getString("next");
+
+            JSONArray list = jsonResource.getJSONArray("data");
+
+            for (int i = 0; i < list.length(); i++) {
+                JSONObject object = list.getJSONObject(i);
+
+                int season = object.getInt("airedSeason");
+                int episode = object.getInt("airedEpisodeNumber");
+                String release_date = object.getString("firstAired");
+                String title = object.getString("episodeName");
                 title = title.replace("'", "\'");
 
                 String queryUpdate = "UPDATE episodes SET title = ?, release_date = ? WHERE showId = ? AND season = ? AND episode = ?";
@@ -105,7 +135,7 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                 statementUpdate.bindLong(5, episode);
                 int updateResult =  mDatabaseConnection.executeInsertQuery(statementUpdate);
 
-                System.out.println("ShowId = " + mShowId + " Episode " + season + " Episode " + episode + " Update Result = " + updateResult);
+                System.out.println("ShowId = " + mShowId + " Season " + season + " Episode " + episode + " Update Result = " + updateResult);
 
                 if(updateResult == -1) {
                     String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, ?, 0)";
@@ -117,11 +147,15 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                     statementInsert.bindString(5, release_date);
                     int insertResult = mDatabaseConnection.executeInsertQuery(statementInsert);
 
-                    System.out.println("ShowId = " + mShowId + " Episode " + season + " Episode " + episode + " Insert result = " + insertResult);
+                    System.out.println("ShowId = " + mShowId + " Season " + season + " Episode " + episode + " Insert result = " + insertResult);
                 }
             }
         } catch (JSONException | SQLiteException ex){
             System.out.println(ex.getMessage());
+        }
+
+        if(newPage != null){
+            getEpisodesArray(newPage);
         }
     }
 }

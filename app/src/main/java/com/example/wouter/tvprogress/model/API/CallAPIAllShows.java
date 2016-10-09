@@ -1,6 +1,8 @@
 package com.example.wouter.tvprogress.model.API;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -17,32 +19,58 @@ import java.util.ArrayList;
 /**
  * Created by Wouter on 22-11-2015.
  */
-public class CallAPIAllShows extends AsyncTask<Integer, String, ArrayList<ShowResource>>{
+public class CallAPIAllShows extends AsyncTask<String, String, ArrayList<ShowResource>>{
 
     private Context mContext;
-    private String urlString = "https://epguides.frecar.no/show/";
+    private String urlString = "https://api.thetvdb.com/search/series";
     private iOnTaskCompleted mCurrentActivity;
+    private String mTitle;
 
-    public CallAPIAllShows(Context context, iOnTaskCompleted currentActivity) {
+    public CallAPIAllShows(Context context, iOnTaskCompleted currentActivity, String title) {
         mContext = context;
         mCurrentActivity = currentActivity;
+        mTitle = title;
     }
 
     @Override
-    protected ArrayList<ShowResource> doInBackground(Integer... params) {
+    protected ArrayList<ShowResource> doInBackground(String... params) {
+        CallAPIAccessToken mCallAPIAccessToken = new CallAPIAccessToken(mContext);
+        String token = mCallAPIAccessToken.GetAccessToken();
+
+        System.out.println("Token = " + token);
+        if(token.isEmpty()){
+            System.err.println("Token empty");
+            return null;
+        }
+
         BufferedReader reader = null;
         ArrayList<ShowResource> result = null;
         // HTTP Get
         try {
 
-            URL url = new URL(urlString);
+            mTitle = mTitle.replace(" ", "%20");
+            System.out.println(mTitle);
+            URL url = new URL(urlString + "?name=" + mTitle);
 
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Authorization", "Bearer " + token);
+
+            int responseCode = urlConnection.getResponseCode();
+            if(responseCode == 401) {
+                System.err.println("Get shows : Not Authorized");
+                return null;
+            }
+            else if(responseCode == 404) {
+                System.err.println("Get shows : Not found");
+                return null;
+            }
 
             reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
 
-        } catch (Exception e ) {
-            System.out.println(e.getMessage());
+        } catch (Exception e ){
+            System.err.println(e);
+            System.err.println("Raise exception : " + e.getMessage());
             return null;
         }
 
@@ -53,11 +81,10 @@ public class CallAPIAllShows extends AsyncTask<Integer, String, ArrayList<ShowRe
             while ((inputStr = reader.readLine()) != null)
                 responseStrBuilder.append(inputStr);
 
-            JSONArray root = new JSONArray(responseStrBuilder.toString());
-
-            result = readShowsArray(root);
+            result = readShowsArray(responseStrBuilder.toString());
         } catch(Exception ex){
-
+            System.err.println(ex.getMessage());
+            return null;
         }
 
         return result;
@@ -68,26 +95,30 @@ public class CallAPIAllShows extends AsyncTask<Integer, String, ArrayList<ShowRe
         mCurrentActivity.onTaskCompleted(showResources);
     }
 
-    public ArrayList<ShowResource> readShowsArray(JSONArray rootObject) throws IOException{
+    public ArrayList<ShowResource> readShowsArray(String jsonString) throws IOException{
         ArrayList<ShowResource> resources = new ArrayList<ShowResource>();
 
-
         try {
-            for(int i=0; i < rootObject.length(); i++) {
-                JSONObject jsonResource = rootObject.getJSONObject(i);
+            JSONObject jsonResource = new JSONObject(jsonString);
 
-                String title = jsonResource.getString("title");
-                String url = jsonResource.getString("episodes");
+            JSONArray list = jsonResource.getJSONArray("data");
+
+            for (int i = 0; i < list.length(); i++) {
+                JSONObject object = list.getJSONObject(i);
+
+                String title = object.getString("seriesName");
+                String status = object.getString("status");
+                long id = object.getLong("id");
 
                 ShowResource newResource = new ShowResource();
                 newResource.setTitle(title);
-                newResource.setURL(url);
+                newResource.setStatus(status);
+                newResource.setURL("https://api.thetvdb.com/series/" + id + "/episodes");
 
                 resources.add(newResource);
-
             }
         } catch (JSONException ex){
-
+            System.err.println("JSON loop = " + ex.getMessage());
         }
 
         return resources;

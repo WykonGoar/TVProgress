@@ -51,7 +51,7 @@ public class ShowResourceAdapter extends BaseAdapter implements Filterable {
         ShowResource resource = mResources.get(position);
 
         tvTitle.setText("" + resource.getTitle());
-        tvURL.setText("" + resource.getURL());
+        tvURL.setText("" + resource.getStatus());
 
         return rowView;
     }
@@ -76,7 +76,7 @@ public class ShowResourceAdapter extends BaseAdapter implements Filterable {
 
                         ShowResource resource = new ShowResource();
                         resource.setTitle(mResourcesFilterList.get(i).getTitle());
-                        resource.setURL(mResourcesFilterList.get(i).getURL());
+                        resource.setStatus(mResourcesFilterList.get(i).getStatus());
 
                         filterList.add(resource);
                     }
