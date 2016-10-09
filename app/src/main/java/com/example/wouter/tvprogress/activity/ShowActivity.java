@@ -173,6 +173,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
         boolean newResource =  mIntent.getBooleanExtra("newResource", false);
         if(newResource)
+            System.out.println("Call resourceChanged");
             resourceChanged();
 
         loadShow();
@@ -285,7 +286,6 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         if(episodes.size() == 0)
             return;
 
-        System.out.println("Amount episodes " + episodes.size());
         mListDataHeader = new LinkedList<Integer>();
         mListDataChild = new HashMap<Integer, LinkedList<Episode>>();
 

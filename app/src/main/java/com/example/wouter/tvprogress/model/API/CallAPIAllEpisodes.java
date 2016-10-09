@@ -46,13 +46,23 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         CallAPIAccessToken mCallAPIAccessToken = new CallAPIAccessToken(mContext);
         mToken = mCallAPIAccessToken.GetAccessToken();
 
-        System.out.println("Token = " + mToken);
         if(mToken.isEmpty()){
             System.err.println("Token empty");
             return null;
         }
 
-        return getEpisodesArray("1");
+        int lastPage = 1;
+        int counter = 1;
+        while (counter <= lastPage) {
+            String jsonString = getEpisodesArray("" + counter);
+            int given = readEpisodesArray(jsonString);
+            if(given != -1){
+                lastPage = given;
+            }
+            counter++;
+        }
+
+        return true;
     }
 
     @Override
@@ -60,7 +70,7 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         mCurrentActivity.onTaskCompleted(true);
     }
 
-    public boolean getEpisodesArray(String page){
+    public String getEpisodesArray(String page){
         BufferedReader reader = null;
         ArrayList<Episode> result = null;
         // HTTP Get
@@ -75,11 +85,11 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
             int responseCode = urlConnection.getResponseCode();
             if(responseCode == 401) {
                 System.err.println("Get shows : Not Authorized");
-                return false;
+                return null;
             }
             else if(responseCode == 404) {
                 System.err.println("Get shows : Not found");
-                return false;
+                return null;
             }
 
             reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
@@ -87,7 +97,7 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         } catch (Exception e ){
             System.err.println(e);
             System.err.println("Raise exception : " + e.getMessage());
-            return false;
+            return null;
         }
 
         try{
@@ -96,24 +106,25 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
             String inputStr;
             while ((inputStr = reader.readLine()) != null)
                 responseStrBuilder.append(inputStr);
+            reader.close();
 
-            readEpisodesArray(responseStrBuilder.toString());
+            return responseStrBuilder.toString();
+
         } catch(Exception ex){
             System.err.println(ex.getMessage());
-            return false;
+            return null;
         }
-
-        return true;
     }
 
-    public void readEpisodesArray(String jsonString) {
+    public int readEpisodesArray(String jsonString) {
         ArrayList<Episode> episodes = new ArrayList<Episode>();
-        String newPage = null;
+        int newPage = -1;
 
         try {
             JSONObject jsonResource = new JSONObject(jsonString);
 
-            newPage = jsonResource.getJSONObject("links").getString("next");
+            JSONObject links = jsonResource.getJSONObject("links");
+            newPage = links.getInt("last");
 
             JSONArray list = jsonResource.getJSONArray("data");
 
@@ -135,8 +146,6 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                 statementUpdate.bindLong(5, episode);
                 int updateResult =  mDatabaseConnection.executeInsertQuery(statementUpdate);
 
-                System.out.println("ShowId = " + mShowId + " Season " + season + " Episode " + episode + " Update Result = " + updateResult);
-
                 if(updateResult == -1) {
                     String queryInsert = "INSERT INTO episodes VALUES(?, ?, ?, ?, ?, 0)";
                     SQLiteStatement statementInsert = mDatabaseConnection.getNewStatement(queryInsert);
@@ -147,15 +156,12 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                     statementInsert.bindString(5, release_date);
                     int insertResult = mDatabaseConnection.executeInsertQuery(statementInsert);
 
-                    System.out.println("ShowId = " + mShowId + " Season " + season + " Episode " + episode + " Insert result = " + insertResult);
                 }
             }
         } catch (JSONException | SQLiteException ex){
-            System.out.println(ex.getMessage());
+            System.err.println(ex.getMessage());
         }
 
-        if(newPage != null){
-            getEpisodesArray(newPage);
-        }
+        return newPage;
     }
 }

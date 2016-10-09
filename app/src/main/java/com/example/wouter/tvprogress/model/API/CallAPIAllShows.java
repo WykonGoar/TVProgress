@@ -37,7 +37,6 @@ public class CallAPIAllShows extends AsyncTask<String, String, ArrayList<ShowRes
         CallAPIAccessToken mCallAPIAccessToken = new CallAPIAccessToken(mContext);
         String token = mCallAPIAccessToken.GetAccessToken();
 
-        System.out.println("Token = " + token);
         if(token.isEmpty()){
             System.err.println("Token empty");
             return null;
@@ -49,7 +48,6 @@ public class CallAPIAllShows extends AsyncTask<String, String, ArrayList<ShowRes
         try {
 
             mTitle = mTitle.replace(" ", "%20");
-            System.out.println(mTitle);
             URL url = new URL(urlString + "?name=" + mTitle);
 
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

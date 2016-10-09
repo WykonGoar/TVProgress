@@ -35,6 +35,7 @@ import com.example.wouter.tvprogress.model.API.iOnTaskCompleted;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class EditShowActivity extends AppCompatActivity implements iOnTaskCompleted{
 
@@ -196,7 +197,10 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
             if(!mShow.getImage().isEmpty())
                 picturesUtil.removePicture(mShow.getImage());
 
-            String nameImage = getNameFromPath(selectedImage);
+            Random random = new Random();
+            int newImageName = random.nextInt(100000000);
+            String nameImage = "" + newImageName;
+            System.out.println("nameImage = " + nameImage);
             Bitmap bitmapImage = BitmapFactory.decodeFile(selectedImage);
             String newImagePath = picturesUtil.saveBitmapLowerQuality(nameImage, bitmapImage);
 
