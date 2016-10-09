@@ -67,7 +67,7 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
             ivShow.setImageBitmap(show.getImageAsImage());
         tvTitle.setText(show.getTitle());
 
-        if(show.getURL() != ""){
+        if(!show.getURL().isEmpty()){
             Episode lastSeenEpisode = mDatabaseConnection.getLastSeenEpisode(show.getId());
 
             if(lastSeenEpisode != null) {

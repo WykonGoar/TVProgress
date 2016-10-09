@@ -43,6 +43,9 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
 
     @Override
     protected Boolean doInBackground(Integer... params) {
+        if(urlString.isEmpty())
+            return true;
+
         CallAPIAccessToken mCallAPIAccessToken = new CallAPIAccessToken(mContext);
         mToken = mCallAPIAccessToken.GetAccessToken();
 

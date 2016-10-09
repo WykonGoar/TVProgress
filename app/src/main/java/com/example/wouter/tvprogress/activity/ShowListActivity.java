@@ -1,7 +1,10 @@
 package com.example.wouter.tvprogress.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -48,6 +51,14 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
             }
         });
 
+        mShowListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                removeShow(position);
+                return true;
+            }
+        });
+
         mSearchView = (SearchView) findViewById(R.id.searchView);
         mSearchView.setOnQueryTextListener(this);
 
@@ -76,6 +87,28 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
         mIntent.putExtra("id", show.getId());
 
         startActivity(mIntent);
+    }
+
+    private void removeShow(int position){
+        final Show show = (Show) mShowListAdapter.getItem(position);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Delete show '" + show.getTitle() + "'")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String query = "DELETE FROM shows WHERE _id = ?";
+                        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+                        statement.bindLong(1, show.getId());
+                        mDatabaseConnection.executeNonReturn(statement);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+        builder.show();
     }
 
     @Override

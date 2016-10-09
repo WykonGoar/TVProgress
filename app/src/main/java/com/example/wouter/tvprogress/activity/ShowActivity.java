@@ -80,7 +80,19 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
         etCurrentSeason = (EditText) findViewById(R.id.etCurrentSeason);
+        etCurrentSeason.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                updateSeason(false);
+            }
+        });
         etCurrentEpisode = (EditText) findViewById(R.id.etCurrentEpisode);
+        etCurrentEpisode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                updateEpisode(false);
+            }
+        });
         ivBanner = (ImageView) findViewById(R.id.ivBanner);
         expandableListView = (ExpandableListView)  findViewById(R.id.elvEpisodes);
 
@@ -157,7 +169,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         bNextSeason.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextSeason();
+                updateSeason(true);
             }
         });
 
@@ -165,7 +177,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         bNextEpisode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nextEpisode();
+                updateEpisode(true);
             }
         });
 
@@ -256,28 +268,38 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         loadShow();
     }
 
-    private void nextSeason(){
-        mShow.setCurrentSeason(mShow.getCurrentSeason() + 1);
+    private void updateSeason(boolean fromButton){
+        int season;
+        if(fromButton)
+            season = mShow.getCurrentSeason() + 1;
+        else
+            season = Integer.parseInt(etCurrentSeason.getText().toString());
 
-        String query = "UPDATE shows SET currentSeason = ? WHERE _id = ?";
-        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-        statement.bindLong(1, mShow.getCurrentSeason());
-        statement.bindLong(2, mShow.getId());
-        mDatabaseConnection.executeNonReturn(statement);
-
-        loadShow();
+        mShow.setCurrentSeason(season);
+        etCurrentSeason.setText("" + season);
     }
 
-    private void nextEpisode(){
-        mShow.setCurrentEpisode(mShow.getCurrentEpisode() + 1);
+    private void updateEpisode(boolean fromButton){
+        int episode;
+        if (fromButton)
+            episode = mShow.getCurrentEpisode() + 1;
+        else
+            episode = Integer.parseInt(etCurrentEpisode.getText().toString());
 
-        String query = "UPDATE shows SET currentEpisode = ? WHERE _id = ?";
+        mShow.setCurrentEpisode(episode);
+        etCurrentEpisode.setText("" + episode);
+    }
+
+    private void updateSeasonEpisode(){
+        mShow.setCurrentSeason(Integer.parseInt(etCurrentSeason.getText().toString()));
+        mShow.setCurrentEpisode(Integer.parseInt(etCurrentEpisode.getText().toString()));
+
+        String query = "UPDATE shows SET currentSeason = ?, currentEpisode = ? WHERE _id = ?";
         SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-        statement.bindLong(1, mShow.getCurrentEpisode());
-        statement.bindLong(2, mShow.getId());
+        statement.bindLong(1, mShow.getCurrentSeason());
+        statement.bindLong(2, mShow.getCurrentEpisode());
+        statement.bindLong(3, mShow.getId());
         mDatabaseConnection.executeNonReturn(statement);
-
-        loadShow();
     }
 
     private void prepareListData() {
@@ -346,6 +368,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
     @Override
     public void onBackPressed() {
+        updateSeasonEpisode();
         finish();
     }
 }
