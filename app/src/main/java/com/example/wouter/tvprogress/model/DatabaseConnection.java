@@ -36,7 +36,6 @@ public class DatabaseConnection extends Activity {
             importDatabaseTables();
             importShows();
         }
-
     }
 
     private void importDatabaseTables(){
@@ -125,18 +124,14 @@ public class DatabaseConnection extends Activity {
             int currentSeason = mCursor.getInt(mCursor.getColumnIndex("currentSeason"));
             //currentEpisode
             int currentEpisode = mCursor.getInt(mCursor.getColumnIndex("currentEpisode"));
-            //lastSeason
-            int lastSeason = mCursor.getInt(mCursor.getColumnIndex("lastSeason"));
-            //lastEpisode
-            int lastEpisode = mCursor.getInt(mCursor.getColumnIndex("lastEpisode"));
-            //image
-            String image = mCursor.getString(mCursor.getColumnIndex("image"));
             // banner
             String banner = mCursor.getString(mCursor.getColumnIndex("banner"));
             //url
             String url = mCursor.getString(mCursor.getColumnIndex("url"));
+            //status
+            String status = mCursor.getString(mCursor.getColumnIndex("status"));
 
-            Show show = new Show(id, title, currentSeason, currentEpisode,  lastSeason, lastEpisode, image, banner, url);
+            Show show = new Show(id, title, currentSeason, currentEpisode, banner, url, status);
             shows.add(show);
 
             mCursor.moveToNext();

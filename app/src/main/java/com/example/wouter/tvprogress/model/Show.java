@@ -14,24 +14,20 @@ public class Show {
     private String mTitle = "";
     private int mCurrentSeason = 1;
     private int mCurrentEpisode = 0;
-    private int mLastSeason = -1;
-    private int mLastEpisode = -1;
-    private String mImage = "";
     private String mBanner = "";
     private String mURL = "";
+    private String mStatus = "";
 
     public Show(){}
 
-    public Show(int mId, String mTitle, int mCurrentSeason, int mCurrentEpisode, int mLastSeason, int mLastEpisode, String mImage, String mBanner, String mURL) {
+    public Show(int mId, String mTitle, int mCurrentSeason, int mCurrentEpisode, String mBanner, String mURL, String mStatus) {
         this.mId = mId;
         this.mTitle = mTitle;
         this.mCurrentSeason = mCurrentSeason;
         this.mCurrentEpisode = mCurrentEpisode;
-        this.mLastSeason = mLastSeason;
-        this.mLastEpisode = mLastEpisode;
-        this.mImage = mImage;
         this.mBanner = mBanner;
         this.mURL = mURL;
+        this.mStatus = mStatus;
     }
 
     public int getId() { return mId; }
@@ -41,24 +37,6 @@ public class Show {
     public int getCurrentSeason() { return mCurrentSeason;}
 
     public int getCurrentEpisode() { return mCurrentEpisode; }
-
-    public int getLastSeason() { return mLastSeason; }
-
-    public int getLastEpisode() { return mLastEpisode; }
-
-    public Bitmap getImageAsImage() {
-        if(mImage.isEmpty() || mImage == null)
-            return  null;
-
-        File f = new File(mImage);
-        if (!f.exists())
-        {
-            mImage = "";
-            return null;
-        }
-        return BitmapFactory.decodeFile(mImage);
-
-    }
 
     public Bitmap getBannerAsImage() {
         if (mBanner.isEmpty() || mBanner == null)
@@ -74,11 +52,11 @@ public class Show {
         return BitmapFactory.decodeFile(mBanner);
     }
 
-    public String getImage() {return mImage;}
-
     public String getBanner() { return mBanner; }
 
     public String getURL() { return mURL; }
+
+    public String getStatus() { return mStatus; }
 
     public void setId (int id) {mId = id;}
 
@@ -88,23 +66,9 @@ public class Show {
 
     public void setCurrentEpisode(int currentEpisode) { mCurrentEpisode = currentEpisode; }
 
-    public void setLastSeason(int lastSeason) { this.mLastSeason = lastSeason; }
-
-    public void setLastEpisode(int lastEpisode) { this.mLastEpisode = lastEpisode; }
-
-    public void setImage(String path) {this.mImage = path; }
-
     public void setBanner(String path) {this.mBanner = path; }
 
     public void setURL(String url) { this.mURL = url; }
 
-    public boolean isUpToDate() {
-        if (mLastSeason != -1
-                && mLastEpisode != -1
-                && mCurrentSeason == mLastSeason
-                && mCurrentEpisode == mLastEpisode) {
-            return true;
-        }
-        return false;
-    }
+    public void setStatus(String status) { this.mStatus = status; }
 }

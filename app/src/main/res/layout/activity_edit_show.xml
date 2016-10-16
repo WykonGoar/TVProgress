@@ -31,36 +31,6 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp">
-
-        <TextView
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Image"
-            android:id="@+id/textView5"
-            android:layout_margin="2dp"/>
-
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:id="@+id/ivImage"
-            android:background="@drawable/border_black"
-            android:clickable="true"
-            android:scaleType="fitXY" />
-
-        <Button
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:background="@android:drawable/ic_menu_edit"
-            android:layout_gravity="bottom"
-            android:id="@+id/bEditImage" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:paddingBottom="10dp"
         android:weightSum="1">
 

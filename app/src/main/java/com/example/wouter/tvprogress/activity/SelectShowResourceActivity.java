@@ -51,10 +51,11 @@ public class SelectShowResourceActivity extends AppCompatActivity implements Sea
     }
 
     private void resourceClicked(int position){
-        String url = ((ShowResource) mShowResourceAdapter.getItem(position)).getURL();
+        ShowResource resource = (ShowResource) mShowResourceAdapter.getItem(position);
 
         Intent intent = new Intent();
-        intent.putExtra("resource", url);
+        intent.putExtra("resource", resource.getURL());
+        intent.putExtra("status", resource.getStatus());
         setResult(RESULT_OK, intent);
         finish();
     }

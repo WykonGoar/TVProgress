@@ -63,6 +63,7 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_show);
 
+        /*
         ivImage = (ImageView) findViewById(R.id.ivImage);
         ivImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +71,7 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
                 editImage();
             }
         });
+        */
 
         SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
         mDatabaseConnection = new DatabaseConnection(mDatabase, this);
@@ -81,20 +83,11 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         if (showId != -1)
             mShow = getShow(showId);
 
-        selectedImage = mShow.getImage();
         selectedBanner = mShow.getBanner();
         selectedResource = mShow.getURL();
 
         etTitle = (EditText) findViewById(R.id.etTitle);
         etTitle.setText(mShow.getTitle());
-
-        Button bEditImage = (Button) findViewById(R.id.bEditImage);
-        bEditImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editImage();
-            }
-        });
 
         ivBanner = (ImageView) findViewById(R.id.ivBanner);
         ivBanner.setOnClickListener(new View.OnClickListener() {
@@ -174,12 +167,6 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         return selectedShow;
     }
 
-    private void editImage(){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent.createChooser(intent, "Select picture"), PickImageCode);
-    }
-
     private void editBanner(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -193,19 +180,6 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
 
         //Save pictures
         PicturesUtil picturesUtil = new PicturesUtil();
-        if(!selectedImage.isEmpty() && imageChanged){
-            if(!mShow.getImage().isEmpty())
-                picturesUtil.removePicture(mShow.getImage());
-
-            Random random = new Random();
-            int newImageName = random.nextInt(100000000);
-            String nameImage = "" + newImageName;
-            System.out.println("nameImage = " + nameImage);
-            Bitmap bitmapImage = BitmapFactory.decodeFile(selectedImage);
-            String newImagePath = picturesUtil.saveBitmapLowerQuality(nameImage, bitmapImage);
-
-            mShow.setImage(newImagePath);
-        }
 
         if(!selectedBanner.isEmpty() && bannerChanged){
             if(!mShow.getBanner().isEmpty())
@@ -239,20 +213,20 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         SQLiteStatement statement = null;
        if(mShow.getId() != -1) {
 
-           String query = "UPDATE shows SET title = ?, image = ?, banner = ?, url = ? WHERE _id = ?;";
+           String query = "UPDATE shows SET title = ?, banner = ?, url = ?, status = ? WHERE _id = ?;";
             statement = mDatabaseConnection.getNewStatement(query);
 
            statement.bindLong(5, mShow.getId());
        }
         else{
-           String query = "INSERT INTO shows (title, image ,banner, url) VALUES (?, ?, ?, ?)";
+           String query = "INSERT INTO shows (title, banner, url, status) VALUES (?, ?, ?, ?)";
            statement = mDatabaseConnection.getNewStatement(query);
        }
 
         statement.bindString(1, mShow.getTitle());
-        statement.bindString(2, mShow.getImage());
-        statement.bindString(3, mShow.getBanner());
-        statement.bindString(4, mShow.getURL());
+        statement.bindString(2, mShow.getBanner());
+        statement.bindString(3, mShow.getURL());
+        statement.bindString(4, mShow.getStatus());
 
         if(mShow.getId() != -1) {
             mDatabaseConnection.executeNonReturn(statement);
@@ -277,25 +251,20 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
 
         if (resultCode == RESULT_OK && data != null) {
 
-            if(requestCode == PickImageCode || requestCode == PickBannerCode) {
+            if(requestCode == PickBannerCode) {
                 Uri uri = data.getData();
                 String realPath = getRealPathFromURI(uri);
 
-                if (requestCode == PickImageCode) {
-                    selectedImage = realPath;
-                    imageChanged = true;
-                }
-
-                if (requestCode == PickBannerCode) {
-                    selectedBanner = realPath;
-                    bannerChanged = true;
-                }
+                selectedBanner = realPath;
+                bannerChanged = true;
 
                 reloadImages();
             }
 
             if(requestCode == PickResourceCode){
                 String resource = data.getStringExtra("resource");
+                String status = data.getStringExtra("status");
+                mShow.setStatus(status);
                 selectedResource = resource;
                 tvResource.setText(resource);
             }
@@ -329,11 +298,6 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
                     mDatabaseConnection.executeNonReturn(statement);
 
                     Toast.makeText(getApplicationContext(), mShow.getTitle() + " removed", Toast.LENGTH_LONG).show();
-
-                    if (!mShow.getImage().isEmpty()) {
-                        File imageFile = new File(mShow.getImage());
-                        imageFile.delete();
-                    }
 
                     if (!mShow.getBanner().isEmpty()) {
                         File bannerFile = new File(mShow.getBanner());

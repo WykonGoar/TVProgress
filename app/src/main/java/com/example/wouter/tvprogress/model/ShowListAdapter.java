@@ -57,15 +57,15 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
         LayoutInflater mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = mLayoutInflater.inflate(R.layout.show_row, parent, false);
 
-        ImageView ivShow = (ImageView) rowView.findViewById(R.id.ivShow);
         TextView tvTitle = (TextView) rowView.findViewById(R.id.tvTitle);
+        TextView tvStatus = (TextView) rowView.findViewById(R.id.tvStatus);
         TextView tvCurrentSeason = (TextView) rowView.findViewById(R.id.tvCurrentSeason);
         TextView tvCurrentEpisode = (TextView) rowView.findViewById(R.id.tvCurrentEpisode);
 
         Show show = mShows.get(position);
-        if (show.getImageAsImage() != null)
-            ivShow.setImageBitmap(show.getImageAsImage());
+
         tvTitle.setText(show.getTitle());
+        tvStatus.setText(show.getStatus());
 
         if(!show.getURL().isEmpty()){
             Episode lastSeenEpisode = mDatabaseConnection.getLastSeenEpisode(show.getId());
@@ -106,7 +106,7 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
                 for (int i = 0; i < mShowFilterList.size(); i++) {
                     if ((mShowFilterList.get(i).getTitle().toUpperCase()).contains(constraint.toString().toUpperCase())) {
 
-                        Show show = new Show(mShowFilterList.get(i).getId(), mShowFilterList.get(i).getTitle(), mShowFilterList.get(i).getCurrentSeason(), mShowFilterList.get(i).getCurrentEpisode(), mShowFilterList.get(i).getLastSeason(), mShowFilterList.get(i).getLastEpisode(), mShowFilterList.get(i).getImage(), mShowFilterList.get(i).getBanner(), mShowFilterList.get(i).getURL());
+                        Show show = new Show(mShowFilterList.get(i).getId(), mShowFilterList.get(i).getTitle(), mShowFilterList.get(i).getCurrentSeason(), mShowFilterList.get(i).getCurrentEpisode(), mShowFilterList.get(i).getBanner(), mShowFilterList.get(i).getURL(), mShowFilterList.get(i).getStatus());
 
                         filterList.add(show);
                     }
@@ -118,7 +118,6 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
                 results.values = mShowFilterList;
             }
             return results;
-
         }
 
         @Override

@@ -67,7 +67,7 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
     }
 
     private void loadShows(){
-        mShows = mDatabaseConnection.getShows("SELECT * FROM shows");
+        mShows = mDatabaseConnection.getShows("SELECT * FROM shows ORDER BY Title");
 
         mShowListAdapter = new ShowListAdapter(this, mShows);
         mShowListView.setAdapter(mShowListAdapter);
@@ -166,7 +166,6 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
 
     @Override
     public void onTaskCompleted(Object values) {
-        loadShows();
-        System.out.println("Reloaded");
+
     }
 }

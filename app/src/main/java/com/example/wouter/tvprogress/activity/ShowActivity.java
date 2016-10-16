@@ -48,6 +48,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
     private LinearLayout llNextEpisode;
 
     private TextView tvTitle;
+    private TextView tvStatus;
     private TextView tvUpToDate;
     private EditText etCurrentSeason;
     private EditText etCurrentEpisode;
@@ -78,6 +79,9 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         llNextEpisode = (LinearLayout) findViewById(R.id.llNextEpisode);
 
         tvTitle = (TextView) findViewById(R.id.tvTitle);
+
+        tvStatus = (TextView) findViewById(R.id.tvStatus);
+
         tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
         etCurrentSeason = (EditText) findViewById(R.id.etCurrentSeason);
         etCurrentSeason.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -214,6 +218,7 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         mShow = getShow(mShow.getId());
 
         tvTitle.setText(mShow.getTitle());
+        tvStatus.setText(mShow.getStatus());
         etCurrentSeason.setText("" + mShow.getCurrentSeason());
         etCurrentEpisode.setText("" + mShow.getCurrentEpisode());
 

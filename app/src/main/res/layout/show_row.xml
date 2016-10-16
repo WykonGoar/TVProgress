@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:weightSum="1">
 
+    <!--
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -11,6 +12,7 @@
         android:layout_weight="0.18"
         android:src="@mipmap/ic_launcher"
         android:scaleType="fitXY" />
+    -->
 
     <LinearLayout
         android:orientation="vertical"
@@ -23,24 +25,34 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Titel"
             android:id="@+id/tvTitle"
-            android:layout_gravity="left|center_horizontal"
-            android:layout_weight="0.18" />
+            android:layout_gravity="left|center_horizontal" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Current season"
-            android:id="@+id/tvCurrentSeason"
-            android:layout_weight="0.18" />
+            android:id="@+id/tvCurrentSeason" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Current episode"
-            android:id="@+id/tvCurrentEpisode"
-            android:layout_weight="0.18" />
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Current episode"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/tvCurrentEpisode" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_alignParentRight="true"
+                android:id="@+id/tvStatus" />
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>
