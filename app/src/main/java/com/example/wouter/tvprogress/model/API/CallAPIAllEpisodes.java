@@ -78,12 +78,12 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         ArrayList<Episode> result = null;
         // HTTP Get
         try {
-            URL url = new URL(urlString);
+            String urlStringPage = urlString + "?page=" + page;
+            URL url = new URL(urlStringPage);
 
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.setRequestProperty("Authorization", "Bearer " + mToken);
-            urlConnection.setRequestProperty("Page", page);
 
             int responseCode = urlConnection.getResponseCode();
             if(responseCode == 401) {
