@@ -367,6 +367,11 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
             startActivity(mIntent);
         }
 
+        if(id == R.id.action_reload)
+        {
+            System.out.println(mShow.getId() + " Show get all episodes");
+            new CallAPIAllEpisodes(this, this, mShow.getId(), mShow.getURL()).execute();
+        }
 
         return super.onOptionsItemSelected(item);
     }

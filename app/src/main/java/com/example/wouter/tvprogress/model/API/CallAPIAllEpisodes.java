@@ -43,10 +43,12 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
 
     @Override
     protected Boolean doInBackground(Integer... params) {
+        System.out.println("CallAPIAllEpisodes do in background with url " + urlString);
         if(urlString.isEmpty())
             return true;
 
         CallAPIAccessToken mCallAPIAccessToken = new CallAPIAccessToken(mContext);
+        System.out.println("Get access token");
         mToken = mCallAPIAccessToken.GetAccessToken();
 
         if(mToken.isEmpty()){
@@ -57,11 +59,13 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         int lastPage = 1;
         int counter = 1;
         while (counter <= lastPage) {
+            System.out.println(mShowId + " Get episodes of page " + counter);
             String jsonString = getEpisodesArray("" + counter);
             int given = readEpisodesArray(jsonString);
             if(given != -1){
                 lastPage = given;
             }
+            System.out.println(mShowId + " Last page = " + lastPage);
             counter++;
         }
 
@@ -123,6 +127,10 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         ArrayList<Episode> episodes = new ArrayList<Episode>();
         int newPage = -1;
 
+        if(jsonString == null){
+            return newPage;
+        }
+
         try {
             JSONObject jsonResource = new JSONObject(jsonString);
 
@@ -158,7 +166,7 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
                     statementInsert.bindString(4, title);
                     statementInsert.bindString(5, release_date);
                     int insertResult = mDatabaseConnection.executeInsertQuery(statementInsert);
-
+                    System.out.println("Insert episode result = " + insertResult);
                 }
             }
         } catch (JSONException | SQLiteException ex){

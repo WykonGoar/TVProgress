@@ -4,6 +4,12 @@
     tools:context="com.example.wouter.tvprogress.activity.ShowActivity">
 
     <item
+        android:id="@+id/action_reload"
+        android:title="Synchronize"
+        android:icon="@android:drawable/ic_popup_sync"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/action_edit"
         android:title="New"
         android:icon="@android:drawable/ic_menu_edit"

@@ -143,6 +143,7 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
         for(Show show : mShows){
             if(show.getURL() != "")
             {
+                System.out.println(show.getId() + " Get all episodes of " + show.getTitle());
                 new CallAPIAllEpisodes(this, this, show.getId(), show.getURL()).execute();
             }
         }
