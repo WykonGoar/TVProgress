@@ -23,8 +23,9 @@ public class DatabaseConnection extends Activity {
     Context mContext;
     Logger log;
 
-    public DatabaseConnection(SQLiteDatabase database, Context context){
-        mDatabase = database;
+    //public DatabaseConnection(SQLiteDatabase database, Context context){
+    public DatabaseConnection(Context context){
+        //mDatabase = database;
         mContext = context;
 
         try{
@@ -79,28 +80,42 @@ public class DatabaseConnection extends Activity {
         }
     }
 
+    private void createConnection(){
+        mDatabase = mContext.openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+    }
+
     public SQLiteStatement getNewStatement(String query){
+        createConnection();
         return mDatabase.compileStatement(query);
     }
 
     public void executeNonReturn(String query) throws  SQLiteException{
+        createConnection();
         mDatabase.execSQL(query);
+        mDatabase.close();
     }
 
     public void executeNonReturn(SQLiteStatement statement){
         statement.execute();
+        mDatabase.close();
     }
 
     public int executeInsertQuery(SQLiteStatement statement){
-        return (int) statement.executeInsert();
+        int result = (int) statement.executeInsert();
+        mDatabase.close();
+        return result;
     }
 
     public int executeUpdateQuery(SQLiteStatement statement){
-        return statement.executeUpdateDelete();
+        int result = statement.executeUpdateDelete();
+        mDatabase.close();
+        return result;
     }
 
     public Cursor executeReturn(String query) throws SQLiteException {
-        return mDatabase.rawQuery(query, null);
+        createConnection();
+        Cursor mCursor = mDatabase.rawQuery(query, null);
+        return mCursor;
     }
 
     public LinkedList<Show> getShows(String query){
@@ -109,6 +124,7 @@ public class DatabaseConnection extends Activity {
             mCursor = executeReturn(query);
         } catch (SQLiteException e) {
             e.printStackTrace();
+            return new LinkedList<>();
         }
 
         mCursor.moveToFirst();
@@ -137,6 +153,8 @@ public class DatabaseConnection extends Activity {
             mCursor.moveToNext();
         }
 
+        mDatabase.close();
+
         return  shows;
     }
 
@@ -148,6 +166,7 @@ public class DatabaseConnection extends Activity {
             mCursor = executeReturn(query);
         } catch (SQLiteException e) {
             e.printStackTrace();
+            return null;
         }
         mCursor.moveToFirst();
 
@@ -169,6 +188,8 @@ public class DatabaseConnection extends Activity {
         Boolean seen = false;
         if(iSeen == 1)
             seen = true;
+
+        mDatabase.close();
 
         Episode nextEpisode = new Episode(currentShowId, season, episode, title, releaseDate, seen);
         return nextEpisode;
@@ -182,6 +203,7 @@ public class DatabaseConnection extends Activity {
             mCursor = executeReturn(query);
         } catch (SQLiteException e) {
             e.printStackTrace();
+            return null;
         }
         mCursor.moveToFirst();
 
@@ -203,6 +225,8 @@ public class DatabaseConnection extends Activity {
         Boolean seen = false;
         if(iSeen == 1)
             seen = true;
+
+        mDatabase.close();
 
         Episode nextEpisode = new Episode(currentShowId, season, episode, title, releaseDate, seen);
         return nextEpisode;
@@ -217,6 +241,7 @@ public class DatabaseConnection extends Activity {
             mCursor = executeReturn(query);
         } catch (SQLiteException e) {
             e.printStackTrace();
+            return new LinkedList<>();
         }
         mCursor.moveToFirst();
 
@@ -245,6 +270,7 @@ public class DatabaseConnection extends Activity {
             mCursor.moveToNext();
         }
 
+        mDatabase.close();
         return  episodes;
     }
 }

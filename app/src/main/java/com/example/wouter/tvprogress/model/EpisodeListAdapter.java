@@ -32,8 +32,8 @@ public class EpisodeListAdapter extends BaseExpandableListAdapter {
         mListDataHeader = listDataHeader;
         mListChildData = listChildData;
 
-        SQLiteDatabase mDatabase = mContext.openOrCreateDatabase("TVProgressDB", mContext.MODE_PRIVATE, null);
-        mDatabaseConnection = new DatabaseConnection(mDatabase, mContext);
+        //SQLiteDatabase mDatabase = mContext.openOrCreateDatabase("TVProgressDB", mContext.MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(mContext);
     }
 
     @Override

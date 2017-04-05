@@ -39,8 +39,8 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_list);
 
-        SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
-        mDatabaseConnection = new DatabaseConnection(mDatabase, this);
+        //SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(this);
 
         mShowListView = (ListView) findViewById(R.id.lvShows);
         mShowListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

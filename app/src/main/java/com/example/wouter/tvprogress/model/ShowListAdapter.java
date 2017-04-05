@@ -32,8 +32,8 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
         mShowFilterList = shows;
 
 
-        SQLiteDatabase mDatabase = context.openOrCreateDatabase("TVProgressDB", context.MODE_PRIVATE, null);
-        mDatabaseConnection = new DatabaseConnection(mDatabase, context);
+        //SQLiteDatabase mDatabase = context.openOrCreateDatabase("TVProgressDB", context.MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(context);
     }
 
     @Override

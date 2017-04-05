@@ -63,18 +63,8 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_show);
 
-        /*
-        ivImage = (ImageView) findViewById(R.id.ivImage);
-        ivImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editImage();
-            }
-        });
-        */
-
-        SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
-        mDatabaseConnection = new DatabaseConnection(mDatabase, this);
+        //SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(this);
 
         mShow = new Show();
 

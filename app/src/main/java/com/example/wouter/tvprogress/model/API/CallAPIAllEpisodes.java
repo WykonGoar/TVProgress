@@ -37,8 +37,8 @@ public class CallAPIAllEpisodes extends AsyncTask<Integer, Integer, Boolean>{
         mCurrentActivity = currentActivity;
         urlString = resource;
 
-        SQLiteDatabase mDatabase = context.openOrCreateDatabase("TVProgressDB", context.MODE_PRIVATE, null);
-        mDatabaseConnection = new DatabaseConnection(mDatabase, context);
+        //SQLiteDatabase mDatabase = context.openOrCreateDatabase("TVProgressDB", context.MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(context);
     }
 
     @Override

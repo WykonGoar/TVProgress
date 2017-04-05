@@ -68,8 +68,8 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         if (showId == -1)
             throw new IndexOutOfBoundsException("No id is given.");
 
-        SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
-        mDatabaseConnection = new DatabaseConnection(mDatabase, this);
+        //SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+        mDatabaseConnection = new DatabaseConnection(this);
 
         tvNextTitle = (TextView) findViewById(R.id.tvNextTitle);
         tvNext = (TextView) findViewById(R.id.tvNext);
