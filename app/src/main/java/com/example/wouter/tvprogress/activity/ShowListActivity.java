@@ -100,6 +100,8 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
                         SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
                         statement.bindLong(1, show.getId());
                         mDatabaseConnection.executeNonReturn(statement);
+
+                        loadShows();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
