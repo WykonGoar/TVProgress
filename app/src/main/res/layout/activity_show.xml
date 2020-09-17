@@ -11,16 +11,17 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#010101">
+        android:background="#010101"
+        android:visibility="gone">
 
         <ImageView
+            android:id="@+id/ivBanner"
             android:layout_width="220dp"
             android:layout_height="100dp"
-            android:id="@+id/ivBanner"
+            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
-            android:src="@mipmap/ic_launcher"
             android:scaleType="fitXY"
-            android:layout_centerHorizontal="true" />
+            android:src="@mipmap/ic_launcher" />
     </RelativeLayout>
 
     <TextView

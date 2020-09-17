@@ -5,9 +5,9 @@
 
     <item
         android:id="@+id/action_reload"
-        android:title="Synchronize"
         android:icon="@android:drawable/ic_popup_sync"
-        app:showAsAction="ifRoom"/>
+        android:title="Synchronize"
+        android:visible="false" />
 
     <item
         android:id="@+id/action_edit"

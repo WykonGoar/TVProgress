@@ -1,7 +1,6 @@
 package com.example.wouter.tvprogress.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,6 +8,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.wouter.tvprogress.R;
 import com.example.wouter.tvprogress.model.API.CallAPIAllShows;
