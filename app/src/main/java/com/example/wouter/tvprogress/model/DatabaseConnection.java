@@ -11,77 +11,134 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Created by Wouter on 19-11-2015.
+ * Created by WykonGoar on 11-09-2020.
  */
 public class DatabaseConnection extends Activity {
 
     SQLiteDatabase mDatabase;
     Context mContext;
-    Logger log;
 
-    //public DatabaseConnection(SQLiteDatabase database, Context context){
     public DatabaseConnection(Context context){
-        //mDatabase = database;
         mContext = context;
 
-        try{
-            String check = "SELECT * FROM shows";
+        Cursor cursor = null;
+        try {
+            String check = "SELECT version FROM db_version";
 
             executeReturn(check);
-        } catch (SQLiteException ex)
-        {
-            importDatabaseTables();
-            importShows();
+
+        }
+        catch (SQLiteException ex) {
+            updateDatabase(0);
+            return;
+        }
+
+        String check = "SELECT version FROM db_version";
+
+        cursor = executeReturn(check);
+
+        cursor.moveToFirst();
+
+        if(cursor.isAfterLast()) {
+            updateDatabase(0);
+        }
+        int version = cursor.getInt(cursor.getColumnIndex("version"));
+
+        updateDatabase(version);
+    }
+
+    private void updateDatabase(int lastVersion) {
+        List<String> filesNames;
+        try {
+            filesNames = Arrays.asList(mContext.getAssets().list("database"));
+        }
+        catch (IOException ex) {
+            throw new Error(ex.getMessage());
+        }
+
+        HashMap<Integer, List<String>> sqlStatements = new HashMap<>();
+        int versionCounter = lastVersion + 1;
+        while (filesNames.contains(String.format("v%d.sql", versionCounter))) {
+            sqlStatements.put(versionCounter, readSQLFile(String.format("v%d.sql", versionCounter)));
+            versionCounter ++;
+        }
+
+        int updateVersion = lastVersion + 1;
+        while (sqlStatements.containsKey(updateVersion)) {
+            List<String> statements = sqlStatements.get(updateVersion);
+
+            for (int i = 0; i < statements.size(); i++) {
+                String statement = statements.get(i);
+
+                System.out.println("Execute: " + statement);
+
+                if (statement.startsWith("INSERT")) {
+                    executeInsertQuery(getNewStatement(statement));
+                } else {
+                    executeNonReturn(statement);
+                }
+            }
+
+            //Update version
+            if (1 == updateVersion) {
+                executeInsertQuery(getNewStatement(
+                        String.format("INSERT INTO db_version VALUES (%d);", updateVersion)
+                ));
+            }
+            else {
+                executeNonReturn(String.format("UPDATE db_version SET version = %d;", updateVersion));
+            }
+
+            updateVersion ++;
         }
     }
 
-    private void importDatabaseTables(){
+    private List<String> readSQLFile(String fileName) {
+        String fileContent = null;
+
         try {
-            InputStream mInputStream = mContext.getAssets().open("TVProgressTables.sql");
+            InputStream mInputStream = mContext.getAssets().open("database/" + fileName);
 
-            BufferedReader mBufferedReader = new BufferedReader(new InputStreamReader(mInputStream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(mInputStream));
 
-            String line = null;
-            do {
-                line = mBufferedReader.readLine();
-                if (line != null) {
-                    executeNonReturn(line);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.replaceAll("\n", "");
+                line = line.replaceAll("\r", "");
+
+                if (fileContent == null) {
+                    fileContent = line;
                 }
-            } while (line != null);
-        }catch (IOException ex){
-            throw new Error(ex.getMessage());
-        }
-    }
-
-    private void importShows(){
-        try {
-            InputStream mInputStream = mContext.getAssets().open("NewShows.sql");
-
-            BufferedReader mBufferedReader = new BufferedReader(new InputStreamReader(mInputStream));
-
-            String line = null;
-            do {
-                line = mBufferedReader.readLine();
-                if (line != null) {
-                    try {
-                        executeNonReturn(line);
-                    }
-                    catch (SQLiteException ex) {
-                        throw new Error(ex.getMessage());
-                    }
+                else {
+                    fileContent += " " + line;
                 }
-            } while (line != null);
-        }catch (IOException ex){
-            throw new Error(ex.getMessage());
+            }
+        } catch (IOException ex){
+            throw new Error(ex.toString());
         }
+
+        ArrayList<String> sqlStatements = new ArrayList<>();
+        if (fileContent == null) {
+            return sqlStatements;
+        }
+
+        for (String query : fileContent.split(";")) {
+            sqlStatements.add(query + ";");
+        }
+
+        return sqlStatements;
     }
 
     private void createConnection(){
-        mDatabase = mContext.openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
+        mDatabase = mContext.openOrCreateDatabase("tvprogressdb", MODE_PRIVATE, null);
     }
 
     public SQLiteStatement getNewStatement(String query){
@@ -89,7 +146,7 @@ public class DatabaseConnection extends Activity {
         return mDatabase.compileStatement(query);
     }
 
-    public void executeNonReturn(String query) throws  SQLiteException{
+    public void executeNonReturn(String query) throws SQLiteException {
         createConnection();
         mDatabase.execSQL(query);
         mDatabase.close();
