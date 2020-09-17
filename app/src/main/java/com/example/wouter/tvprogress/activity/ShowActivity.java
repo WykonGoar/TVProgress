@@ -34,7 +34,7 @@ import com.example.wouter.tvprogress.model.Show;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted {
+public class ShowActivity extends AppCompatActivity { //implements iOnTaskCompleted {
 
     private Context mContext;
     private LinkedList<Integer> mListDataHeader;
@@ -81,9 +81,9 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
         tvTitle = (TextView) findViewById(R.id.tvTitle);
 
-        tvStatus = (TextView) findViewById(R.id.tvStatus);
-
-        tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
+//        tvStatus = (TextView) findViewById(R.id.tvStatus);
+//
+//        tvUpToDate = (TextView) findViewById(R.id.tvUpToDate);
         etCurrentSeason = (EditText) findViewById(R.id.etCurrentSeason);
         etCurrentSeason.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -98,77 +98,77 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
                 updateEpisode(false);
             }
         });
-        ivBanner = (ImageView) findViewById(R.id.ivBanner);
-        expandableListView = (ExpandableListView)  findViewById(R.id.elvEpisodes);
+//        ivBanner = (ImageView) findViewById(R.id.ivBanner);
+//        expandableListView = (ExpandableListView)  findViewById(R.id.elvEpisodes);
+//
+//        // Listview on child click listener
+//        expandableListView.setOnChildClickListener(new OnChildClickListener() {
+//
+//            @Override
+//            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+//                int groupValue = mListDataHeader.get(groupPosition);
+//                Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
+//
+//                ImageView ivCheckbox = (ImageView) v.findViewById(R.id.cbSeen);
+//
+//                String query = "";
+//                if (selectedEpisode.isSeen()) {
+//                     query = "UPDATE episodes SET seen = 0 WHERE showId = ? AND season = ? AND episode = ?";
+//
+//                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_000);
+//                    selectedEpisode.setmSeen(false);
+//                } else {
+//                    query = "UPDATE episodes SET seen = 1 WHERE showId = ? AND season = ? AND episode = ?";
+//
+//                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_015);
+//                    selectedEpisode.setmSeen(true);
+//                }
+//
+//                SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+//                statement.bindLong(1, selectedEpisode.getShowId());
+//                statement.bindLong(2, selectedEpisode.getSeason());
+//                statement.bindLong(3, selectedEpisode.getEpisode());
+//                mDatabaseConnection.executeNonReturn(statement);
+//
+//                getNextEpisode();
+//
+//                return true;
+//            }
+//        });
 
-        // Listview on child click listener
-        expandableListView.setOnChildClickListener(new OnChildClickListener() {
+//        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                int itemType = ExpandableListView.getPackedPositionType(id);
+//
+//                if ( itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+//                    int childPosition = ExpandableListView.getPackedPositionChild(id);
+//                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+//
+//                    int groupValue = mListDataHeader.get(groupPosition);
+//                    Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
+//
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+//
+//                    builder.setMessage("Release date: " + selectedEpisode.getReleaseDate());
+//                    builder.setTitle("Release date");
+//
+//                    AlertDialog dialog = builder.create();
+//                    dialog.show();
+//                    return  true;
+//                }
+//
+//                return  false;
+//            }
+//        });
 
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                int groupValue = mListDataHeader.get(groupPosition);
-                Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
-
-                ImageView ivCheckbox = (ImageView) v.findViewById(R.id.cbSeen);
-
-                String query = "";
-                if (selectedEpisode.isSeen()) {
-                     query = "UPDATE episodes SET seen = 0 WHERE showId = ? AND season = ? AND episode = ?";
-
-                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_000);
-                    selectedEpisode.setmSeen(false);
-                } else {
-                    query = "UPDATE episodes SET seen = 1 WHERE showId = ? AND season = ? AND episode = ?";
-
-                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_015);
-                    selectedEpisode.setmSeen(true);
-                }
-
-                SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-                statement.bindLong(1, selectedEpisode.getShowId());
-                statement.bindLong(2, selectedEpisode.getSeason());
-                statement.bindLong(3, selectedEpisode.getEpisode());
-                mDatabaseConnection.executeNonReturn(statement);
-
-                getNextEpisode();
-
-                return true;
-            }
-        });
-
-        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                int itemType = ExpandableListView.getPackedPositionType(id);
-
-                if ( itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-                    int childPosition = ExpandableListView.getPackedPositionChild(id);
-                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-
-                    int groupValue = mListDataHeader.get(groupPosition);
-                    Episode selectedEpisode = mListDataChild.get(groupValue).get(childPosition);
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-
-                    builder.setMessage("Release date: " + selectedEpisode.getReleaseDate());
-                    builder.setTitle("Release date");
-
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                    return  true;
-                }
-
-                return  false;
-            }
-        });
-
-        Button bSeenNextEpisode = (Button) findViewById(R.id.bSeenNextEpisode);
-        bSeenNextEpisode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                seenNextEpisode();
-            }
-        });
+//        Button bSeenNextEpisode = (Button) findViewById(R.id.bSeenNextEpisode);
+//        bSeenNextEpisode.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                seenNextEpisode();
+//            }
+//        });
 
         Button bNextSeason = (Button) findViewById(R.id.bNextSeason);
         bNextSeason.setOnClickListener(new View.OnClickListener() {
@@ -188,10 +188,10 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
 
         mShow = getShow(showId);
 
-        boolean newResource =  mIntent.getBooleanExtra("newResource", false);
-        if(newResource)
-            System.out.println("Call resourceChanged");
-            resourceChanged();
+//        boolean newResource =  mIntent.getBooleanExtra("newResource", false);
+//        if(newResource)
+//            System.out.println("Call resourceChanged");
+//            resourceChanged();
 
         loadShow();
     }
@@ -219,60 +219,62 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
         mShow = getShow(mShow.getId());
 
         tvTitle.setText(mShow.getTitle());
-        tvStatus.setText(mShow.getStatus());
+//        tvStatus.setText(mShow.getStatus());
+        System.out.println(String.format("current season: %d", mShow.getCurrentSeason()));
+        System.out.println(String.format("current episode: %d", mShow.getCurrentEpisode()));
         etCurrentSeason.setText("" + mShow.getCurrentSeason());
         etCurrentEpisode.setText("" + mShow.getCurrentEpisode());
 
-        if (mShow.getBannerAsImage() != null)
-            ivBanner.setImageBitmap(mShow.getBannerAsImage());
+//        if (mShow.getBannerAsImage() != null)
+//            ivBanner.setImageBitmap(mShow.getBannerAsImage());
 
-        if(!mShow.getURL().isEmpty()){
-            llEditable.setVisibility(View.GONE);
-            llNext.setVisibility(View.VISIBLE);
-            Episode nextEpisode = getNextEpisode();
-
-            if(nextEpisode == null) {
-                llNextEpisode.setVisibility(View.GONE);
-                tvUpToDate.setVisibility(View.VISIBLE);
-            }
-
-            prepareListData();
-
-            if (mListDataHeader != null) {
-                ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
-                expandableListView.setAdapter(expandableListAdapter);
-
-                int index = 0;
-                if(nextEpisode != null)
-                    index = mListDataHeader.indexOf(nextEpisode.getSeason());
-                expandableListView.expandGroup(index);
-            }
-        }
+//        if(!mShow.getURL().isEmpty()){
+//            llEditable.setVisibility(View.GONE);
+//            llNext.setVisibility(View.VISIBLE);
+//            Episode nextEpisode = getNextEpisode();
+//
+//            if(nextEpisode == null) {
+//                llNextEpisode.setVisibility(View.GONE);
+//                tvUpToDate.setVisibility(View.VISIBLE);
+//            }
+//
+//            prepareListData();
+//
+//            if (mListDataHeader != null) {
+//                ExpandableListAdapter expandableListAdapter = new EpisodeListAdapter(getBaseContext(), mListDataHeader, mListDataChild);
+//                expandableListView.setAdapter(expandableListAdapter);
+//
+//                int index = 0;
+//                if(nextEpisode != null)
+//                    index = mListDataHeader.indexOf(nextEpisode.getSeason());
+//                expandableListView.expandGroup(index);
+//            }
+//        }
     }
 
-    private Episode getNextEpisode(){
-        Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
+//    private Episode getNextEpisode(){
+//        Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
+//
+//        if(nextEpisode != null) {
+//            tvNextTitle.setText(nextEpisode.getTitle());
+//            tvNext.setText("Season: " + nextEpisode.getSeason() + "   Episode: " + nextEpisode.getEpisode());
+//        }
+//
+//        return nextEpisode;
+//    }
 
-        if(nextEpisode != null) {
-            tvNextTitle.setText(nextEpisode.getTitle());
-            tvNext.setText("Season: " + nextEpisode.getSeason() + "   Episode: " + nextEpisode.getEpisode());
-        }
-
-        return nextEpisode;
-    }
-
-    private void seenNextEpisode(){
-        Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
-
-        String query = "UPDATE episodes SET seen = 1 WHERE showId = ? AND season = ? AND episode = ?";
-        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-        statement.bindLong(1, nextEpisode.getShowId());
-        statement.bindLong(2, nextEpisode.getSeason());
-        statement.bindLong(3, nextEpisode.getEpisode());
-        mDatabaseConnection.executeNonReturn(statement);
-
-        loadShow();
-    }
+//    private void seenNextEpisode(){
+//        Episode nextEpisode = mDatabaseConnection.getNextpisode(mShow.getId());
+//
+//        String query = "UPDATE episodes SET seen = 1 WHERE showId = ? AND season = ? AND episode = ?";
+//        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+//        statement.bindLong(1, nextEpisode.getShowId());
+//        statement.bindLong(2, nextEpisode.getSeason());
+//        statement.bindLong(3, nextEpisode.getEpisode());
+//        mDatabaseConnection.executeNonReturn(statement);
+//
+//        loadShow();
+//    }
 
     private void updateSeason(boolean fromButton){
         int season;
@@ -297,54 +299,51 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
     }
 
     private void updateSeasonEpisode(){
+        System.out.println("updateSeasonEpisode!!!!!!!!!");
+
         mShow.setCurrentSeason(Integer.parseInt(etCurrentSeason.getText().toString()));
         mShow.setCurrentEpisode(Integer.parseInt(etCurrentEpisode.getText().toString()));
 
-        String query = "UPDATE shows SET currentSeason = ?, currentEpisode = ? WHERE _id = ?";
-        SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-        statement.bindLong(1, mShow.getCurrentSeason());
-        statement.bindLong(2, mShow.getCurrentEpisode());
-        statement.bindLong(3, mShow.getId());
-        mDatabaseConnection.executeNonReturn(statement);
+        mShow.save(mDatabaseConnection);
     }
 
-    private void prepareListData() {
-        LinkedList<Episode> episodes = mDatabaseConnection.getEpisodes(mShow.getId());
+//    private void prepareListData() {
+//        LinkedList<Episode> episodes = mDatabaseConnection.getEpisodes(mShow.getId());
+//
+//        if(episodes.size() == 0)
+//            return;
+//
+//        mListDataHeader = new LinkedList<Integer>();
+//        mListDataChild = new HashMap<Integer, LinkedList<Episode>>();
+//
+//        for(Episode episode : episodes){
+//            int currentSeason = episode.getSeason();
+//
+//            LinkedList<Episode> newEpisodesList = null;
+//
+//            if (!mListDataHeader.contains(currentSeason)){
+//                mListDataHeader.add(currentSeason);
+//                newEpisodesList = new LinkedList<Episode>();
+//            }
+//            else {
+//                newEpisodesList = mListDataChild.get(currentSeason);
+//            }
+//
+//            newEpisodesList.add(episode);
+//
+//            mListDataChild.remove(currentSeason);
+//            mListDataChild.put(currentSeason, newEpisodesList);
+//        }
+//    }
 
-        if(episodes.size() == 0)
-            return;
+//    @Override
+//    public void onTaskCompleted(Object values) {
+//        loadShow();
+//    }
 
-        mListDataHeader = new LinkedList<Integer>();
-        mListDataChild = new HashMap<Integer, LinkedList<Episode>>();
-
-        for(Episode episode : episodes){
-            int currentSeason = episode.getSeason();
-
-            LinkedList<Episode> newEpisodesList = null;
-
-            if (!mListDataHeader.contains(currentSeason)){
-                mListDataHeader.add(currentSeason);
-                newEpisodesList = new LinkedList<Episode>();
-            }
-            else {
-                newEpisodesList = mListDataChild.get(currentSeason);
-            }
-
-            newEpisodesList.add(episode);
-
-            mListDataChild.remove(currentSeason);
-            mListDataChild.put(currentSeason, newEpisodesList);
-        }
-    }
-
-    @Override
-    public void onTaskCompleted(Object values) {
-        loadShow();
-    }
-
-    private void resourceChanged(){
-        new CallAPIAllEpisodes(this, this, mShow.getId(), mShow.getURL()).execute();
-    }
+//    private void resourceChanged(){
+//        new CallAPIAllEpisodes(this, this, mShow.getId(), mShow.getURL()).execute();
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -368,11 +367,11 @@ public class ShowActivity extends AppCompatActivity implements iOnTaskCompleted 
             startActivity(mIntent);
         }
 
-        if(id == R.id.action_reload)
-        {
-            System.out.println(mShow.getId() + " Show get all episodes");
-            new CallAPIAllEpisodes(this, this, mShow.getId(), mShow.getURL()).execute();
-        }
+//        if(id == R.id.action_reload)
+//        {
+//            System.out.println(mShow.getId() + " Show get all episodes");
+//            new CallAPIAllEpisodes(this, this, mShow.getId(), mShow.getURL()).execute();
+//        }
 
         return super.onOptionsItemSelected(item);
     }

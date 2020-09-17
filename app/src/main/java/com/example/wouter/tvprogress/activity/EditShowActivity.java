@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class EditShowActivity extends AppCompatActivity implements iOnTaskCompleted{
+public class EditShowActivity extends AppCompatActivity { //implements iOnTaskCompleted{
 
     private Show mShow;
     private EditText etTitle;
@@ -73,27 +73,27 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         if (showId != -1)
             mShow = getShow(showId);
 
-        selectedBanner = mShow.getBanner();
-        selectedResource = mShow.getURL();
+//        selectedBanner = mShow.getBanner();
+//        selectedResource = mShow.getURL();
 
         etTitle = (EditText) findViewById(R.id.etTitle);
         etTitle.setText(mShow.getTitle());
 
-        ivBanner = (ImageView) findViewById(R.id.ivBanner);
-        ivBanner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editBanner();
-            }
-        });
+//        ivBanner = (ImageView) findViewById(R.id.ivBanner);
+//        ivBanner.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                editBanner();
+//            }
+//        });
 
-        Button bEditBanner = (Button) findViewById(R.id.bEditBanner);
-        bEditBanner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editBanner();
-            }
-        });
+//        Button bEditBanner = (Button) findViewById(R.id.bEditBanner);
+//        bEditBanner.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                editBanner();
+//            }
+//        });
 
         Button bSave = (Button) findViewById(R.id.bSave);
         bSave.setOnClickListener(new View.OnClickListener() {
@@ -103,47 +103,47 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
             }
         });
 
-        Button bSelectResource = (Button) findViewById(R.id.bSelectResource);
-        bSelectResource.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectResource();
-            }
-        });
+//        Button bSelectResource = (Button) findViewById(R.id.bSelectResource);
+//        bSelectResource.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                selectResource();
+//            }
+//        });
+//
+//        tvResource = (TextView) findViewById(R.id.tvResource);
+//        tvResource.setText(mShow.getURL());
+//
+//        Button bRemoveResource = (Button) findViewById(R.id.bRemoveResource);
+//        bRemoveResource.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                selectedResource = "";
+//                tvResource.setText("");
+//            }
+//        });
 
-        tvResource = (TextView) findViewById(R.id.tvResource);
-        tvResource.setText(mShow.getURL());
-
-        Button bRemoveResource = (Button) findViewById(R.id.bRemoveResource);
-        bRemoveResource.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedResource = "";
-                tvResource.setText("");
-            }
-        });
-
-        reloadImages();
+//        reloadImages();
     }
 
-    private void reloadImages()
-    {
-        try{
-        if(!selectedImage.isEmpty()){
-            Bitmap fullImage = BitmapFactory.decodeFile(selectedImage);
-            int nhImage = (int) (fullImage.getHeight() * (512.0 / fullImage.getWidth()));
-            Bitmap scaledImage = Bitmap.createScaledBitmap(fullImage, 512, nhImage, true);
-            ivImage.setImageBitmap(scaledImage);
-        }
-
-        if(!selectedBanner.isEmpty()){
-            Bitmap fullBanner = BitmapFactory.decodeFile(selectedBanner);
-            int nhBanner = (int) (fullBanner.getHeight() * (512.0 / fullBanner.getWidth()));
-            Bitmap scaledBanner = Bitmap.createScaledBitmap(fullBanner, 512, nhBanner, true);
-            ivBanner.setImageBitmap(scaledBanner);
-        }}
-        catch (Exception e){}
-    }
+//    private void reloadImages()
+//    {
+//        try{
+//        if(!selectedImage.isEmpty()){
+//            Bitmap fullImage = BitmapFactory.decodeFile(selectedImage);
+//            int nhImage = (int) (fullImage.getHeight() * (512.0 / fullImage.getWidth()));
+//            Bitmap scaledImage = Bitmap.createScaledBitmap(fullImage, 512, nhImage, true);
+//            ivImage.setImageBitmap(scaledImage);
+//        }
+//
+//        if(!selectedBanner.isEmpty()){
+//            Bitmap fullBanner = BitmapFactory.decodeFile(selectedBanner);
+//            int nhBanner = (int) (fullBanner.getHeight() * (512.0 / fullBanner.getWidth()));
+//            Bitmap scaledBanner = Bitmap.createScaledBitmap(fullBanner, 512, nhBanner, true);
+//            ivBanner.setImageBitmap(scaledBanner);
+//        }}
+//        catch (Exception e){}
+//    }
 
     private Show getShow(int showId){
         LinkedList<Show> shows = mDatabaseConnection.getShows("SELECT * FROM shows WHERE _id = " + showId);
@@ -157,110 +157,82 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         return selectedShow;
     }
 
-    private void editBanner(){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent.createChooser(intent, "Select picture"), PickBannerCode);
-    }
+//    private void editBanner(){
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/*");
+//        startActivityForResult(intent.createChooser(intent, "Select picture"), PickBannerCode);
+//    }
 
     private void saveShow(){
         Intent mIntent = new Intent(getApplicationContext(), ShowActivity.class);
 
-        mShow.setTitle(etTitle.getText().toString());
+        String title = etTitle.getText().toString();
 
         //Save pictures
-        PicturesUtil picturesUtil = new PicturesUtil();
+//        PicturesUtil picturesUtil = new PicturesUtil();
 
-        if(!selectedBanner.isEmpty() && bannerChanged){
-            if(!mShow.getBanner().isEmpty())
-                picturesUtil.removePicture(mShow.getBanner());
+//        if(!selectedBanner.isEmpty() && bannerChanged){
+//            if(!mShow.getBanner().isEmpty())
+//                picturesUtil.removePicture(mShow.getBanner());
+//
+//            String nameBanner = getNameFromPath(selectedBanner);
+//            Bitmap bitmapBanner = BitmapFactory.decodeFile(selectedBanner);
+//            String newBannerPath = picturesUtil.saveBitmapLowerQuality(nameBanner, bitmapBanner);
+//
+//            mShow.setBanner(newBannerPath);
+//        }
 
-            String nameBanner = getNameFromPath(selectedBanner);
-            Bitmap bitmapBanner = BitmapFactory.decodeFile(selectedBanner);
-            String newBannerPath = picturesUtil.saveBitmapLowerQuality(nameBanner, bitmapBanner);
-
-            mShow.setBanner(newBannerPath);
-        }
-
-        if(mShow.getTitle().isEmpty())
+        if(title.trim().isEmpty())
         {
-            Toast.makeText(getBaseContext(), "Title must be filled in.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Title is empty.", Toast.LENGTH_LONG).show();
             return;
         }
+        mShow.setTitle(title);
 
-        if(!selectedResource.isEmpty() && (selectedResource != mShow.getURL())) {
-            mIntent.putExtra("newResource", true);
-        }
-        else if(selectedResource.isEmpty() && mShow.getId() != -1){
-            String query = "DELETE FROM episodes WHERE showId = ?";
-            SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-            statement.bindLong(1, mShow.getId());
-            mDatabaseConnection.executeNonReturn(statement);
-        }
+//        if(!selectedResource.isEmpty() && (selectedResource != mShow.getURL())) {
+//            mIntent.putExtra("newResource", true);
+//        }
+//        else if(selectedResource.isEmpty() && mShow.getId() != -1){
+//            String query = "DELETE FROM episodes WHERE showId = ?";
+//            SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
+//            statement.bindLong(1, mShow.getId());
+//            mDatabaseConnection.executeNonReturn(statement);
+//        }
+//        mShow.setURL(tvResource.getText().toString());
 
-        mShow.setURL(tvResource.getText().toString());
-
-        SQLiteStatement statement = null;
-       if(mShow.getId() != -1) {
-
-           String query = "UPDATE shows SET title = ?, banner = ?, url = ?, status = ? WHERE _id = ?;";
-            statement = mDatabaseConnection.getNewStatement(query);
-
-           statement.bindLong(5, mShow.getId());
-       }
-        else{
-           String query = "INSERT INTO shows (title, banner, url, status) VALUES (?, ?, ?, ?)";
-           statement = mDatabaseConnection.getNewStatement(query);
-       }
-
-        statement.bindString(1, mShow.getTitle());
-        statement.bindString(2, mShow.getBanner());
-        statement.bindString(3, mShow.getURL());
-        statement.bindString(4, mShow.getStatus());
-
-        if(mShow.getId() != -1) {
-            mDatabaseConnection.executeNonReturn(statement);
-        }
-        else{
-            int newId = mDatabaseConnection.executeInsertQuery(statement);
-            if(newId == -1) {
-                Toast.makeText(this, "Can't add this show.\nTry changing the name.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            mShow.setId(newId);
-        }
+        mShow.save(mDatabaseConnection);
 
         mIntent.putExtra("id", mShow.getId());
         startActivity(mIntent);
         finish();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && data != null) {
-
-            if(requestCode == PickBannerCode) {
-                Uri uri = data.getData();
-                String realPath = getRealPathFromURI(uri);
-
-                selectedBanner = realPath;
-                bannerChanged = true;
-
-                reloadImages();
-            }
-
-            if(requestCode == PickResourceCode){
-                String resource = data.getStringExtra("resource");
-                String status = data.getStringExtra("status");
-                mShow.setStatus(status);
-                selectedResource = resource;
-                tvResource.setText(resource);
-            }
-
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if (resultCode == RESULT_OK && data != null) {
+//
+//            if(requestCode == PickBannerCode) {
+//                Uri uri = data.getData();
+//                String realPath = getRealPathFromURI(uri);
+//
+//                selectedBanner = realPath;
+//                bannerChanged = true;
+//
+//                reloadImages();
+//            }
+//
+//            if(requestCode == PickResourceCode){
+//                String resource = data.getStringExtra("resource");
+//                String status = data.getStringExtra("status");
+//                mShow.setStatus(status);
+//                selectedResource = resource;
+//                tvResource.setText(resource);
+//            }
+//
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -280,19 +252,15 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         if(id == R.id.action_delete){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Remove " + mShow.getTitle() + " ?");
-            builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    String query = "DELETE FROM shows WHERE _id = ?";
-                    SQLiteStatement statement = mDatabaseConnection.getNewStatement(query);
-                    statement.bindLong(1, mShow.getId());
-                    mDatabaseConnection.executeNonReturn(statement);
-
+                    mShow.delete(mDatabaseConnection);
                     Toast.makeText(getApplicationContext(), mShow.getTitle() + " removed", Toast.LENGTH_LONG).show();
 
-                    if (!mShow.getBanner().isEmpty()) {
-                        File bannerFile = new File(mShow.getBanner());
-                        bannerFile.delete();
-                    }
+//                    if (!mShow.getBanner().isEmpty()) {
+//                        File bannerFile = new File(mShow.getBanner());
+//                        bannerFile.delete();
+//                    }
 
                     Intent mIntent = new Intent(getApplicationContext(), ShowListActivity.class);
 
@@ -310,72 +278,72 @@ public class EditShowActivity extends AppCompatActivity implements iOnTaskComple
         return super.onOptionsItemSelected(item);
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
+//    private String getRealPathFromURI(Uri contentUri) {
+//        String[] proj = { MediaStore.Images.Media.DATA };
+//
+//        CursorLoader cursorLoader = new CursorLoader( this, contentUri, proj, null, null, null);
+//        Cursor cursor = cursorLoader.loadInBackground();
+//
+//        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//        cursor.moveToFirst();
+//        return cursor.getString(column_index);
+//    }
 
-        CursorLoader cursorLoader = new CursorLoader( this, contentUri, proj, null, null, null);
-        Cursor cursor = cursorLoader.loadInBackground();
-
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
-
-    private String getNameFromPath(String path){
-        int indexExtention = path.lastIndexOf('.');
-        int indexName = path.lastIndexOf('/') +1;
-
-        return path.substring(indexName, indexExtention);
-    }
+//    private String getNameFromPath(String path){
+//        int indexExtention = path.lastIndexOf('.');
+//        int indexName = path.lastIndexOf('/') +1;
+//
+//        return path.substring(indexName, indexExtention);
+//    }
 
     @Override
     public void onBackPressed() {
         finish();
     }
 
-    private void selectResource(){
-        final String givenTitle = etTitle.getText().toString();
-        if(givenTitle.isEmpty()){
-            Toast.makeText(EditShowActivity.this, "No title selected", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//    private void selectResource(){
+//        final String givenTitle = etTitle.getText().toString();
+//        if(givenTitle.isEmpty()){
+//            Toast.makeText(EditShowActivity.this, "No title selected", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        WiFiConnection wiFiConnection = new WiFiConnection(this);
+//
+//        if(wiFiConnection.isConnectedToWiFi()) {
+//            startCallAPIAllShows(givenTitle);
+//        }
+//        else {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage("Not connected to WiFi!\nDo you want to use mobile internet?");
+//
+//            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    startCallAPIAllShows(givenTitle);
+//                }
+//            });
+//            builder.setNegativeButton("Cancel",null);
+//            // Create the AlertDialog object and return it
+//            builder.create().show();
+//        }
+//    }
 
-        WiFiConnection wiFiConnection = new WiFiConnection(this);
+//    private void startCallAPIAllShows(String title){
+//        new CallAPIAllShows(this, this, title).execute();
+//    }
 
-        if(wiFiConnection.isConnectedToWiFi()) {
-            startCallAPIAllShows(givenTitle);
-        }
-        else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Not connected to WiFi!\nDo you want to use mobile internet?");
-
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    startCallAPIAllShows(givenTitle);
-                }
-            });
-            builder.setNegativeButton("Cancel",null);
-            // Create the AlertDialog object and return it
-            builder.create().show();
-        }
-    }
-
-    private void startCallAPIAllShows(String title){
-        new CallAPIAllShows(this, this, title).execute();
-    }
-
-    @Override
-    public void onTaskCompleted(Object values) {
-        if (values != null){
-            if(values.getClass() == ArrayList.class){
-                ArrayList<ShowResource> resourceList = (ArrayList<ShowResource>) values;
-                Intent intent = new Intent(this, SelectShowResourceActivity.class);
-                intent.putParcelableArrayListExtra("resources", resourceList);
-                startActivityForResult(intent, PickResourceCode);
-            }
-        }
-        else{
-            Toast.makeText(this, "No resources found.", Toast.LENGTH_LONG).show();
-        }
-    }
+//    @Override
+//    public void onTaskCompleted(Object values) {
+//        if (values != null){
+//            if(values.getClass() == ArrayList.class){
+//                ArrayList<ShowResource> resourceList = (ArrayList<ShowResource>) values;
+//                Intent intent = new Intent(this, SelectShowResourceActivity.class);
+//                intent.putParcelableArrayListExtra("resources", resourceList);
+//                startActivityForResult(intent, PickResourceCode);
+//            }
+//        }
+//        else{
+//            Toast.makeText(this, "No resources found.", Toast.LENGTH_LONG).show();
+//        }
+//    }
 }

@@ -67,23 +67,23 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
         tvTitle.setText(show.getTitle());
         tvStatus.setText(show.getStatus());
 
-        if(!show.getURL().isEmpty()){
-            Episode lastSeenEpisode = mDatabaseConnection.getLastSeenEpisode(show.getId());
-
-            if(lastSeenEpisode != null) {
-                tvCurrentSeason.setText("Season: " + lastSeenEpisode.getSeason());
-                tvCurrentEpisode.setText("Episode: " + lastSeenEpisode.getEpisode());
-            }
-            else
-            {
-                tvCurrentSeason.setText("Season: 1");
-                tvCurrentEpisode.setText("Episode: 0");
-            }
-        }
-        else {
-            tvCurrentSeason.setText("Season: " + show.getCurrentSeason());
-            tvCurrentEpisode.setText("Episode: " + show.getCurrentEpisode());
-        }
+//        if(!show.getURL().isEmpty()){
+//            Episode lastSeenEpisode = mDatabaseConnection.getLastSeenEpisode(show.getId());
+//
+//            if(lastSeenEpisode != null) {
+//                tvCurrentSeason.setText("Season: " + lastSeenEpisode.getSeason());
+//                tvCurrentEpisode.setText("Episode: " + lastSeenEpisode.getEpisode());
+//            }
+//            else
+//            {
+//                tvCurrentSeason.setText("Season: 1");
+//                tvCurrentEpisode.setText("Episode: 0");
+//            }
+//        }
+//        else {
+        tvCurrentSeason.setText("Season: " + show.getCurrentSeason());
+        tvCurrentEpisode.setText("Episode: " + show.getCurrentEpisode());
+//        }
 
         return  rowView;
     }

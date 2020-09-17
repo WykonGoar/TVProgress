@@ -165,6 +165,7 @@ public class DatabaseConnection extends Activity {
 
     public int executeUpdateQuery(SQLiteStatement statement){
         int result = statement.executeUpdateDelete();
+        System.out.println("Update result " + result);
         mDatabase.close();
         return result;
     }

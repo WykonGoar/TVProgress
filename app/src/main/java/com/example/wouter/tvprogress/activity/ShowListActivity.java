@@ -64,7 +64,7 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
         mSearchView.setOnQueryTextListener(this);
 
         loadShows();
-        ReloadEpisodeList();
+//        ReloadEpisodeList();
     }
 
     private void loadShows(){
@@ -134,23 +134,23 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
             startActivity(mIntent);
         }
 
-        if(id == R.id.action_reload)
-        {
-            ReloadEpisodeList();
-        }
+//        if(id == R.id.action_reload)
+//        {
+//            ReloadEpisodeList();
+//        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void ReloadEpisodeList(){
-        for(Show show : mShows){
-            if(show.getURL() != "")
-            {
-                System.out.println(show.getId() + " Get all episodes of " + show.getTitle());
-                new CallAPIAllEpisodes(this, this, show.getId(), show.getURL()).execute();
-            }
-        }
-    }
+//    private void ReloadEpisodeList(){
+//        for(Show show : mShows){
+//            if(show.getURL() != "")
+//            {
+//                System.out.println(show.getId() + " Get all episodes of " + show.getTitle());
+//                new CallAPIAllEpisodes(this, this, show.getId(), show.getURL()).execute();
+//            }
+//        }
+//    }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
