@@ -2,17 +2,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".ShowList">
 
-    <item
-        android:id="@+id/action_reload"
-        android:icon="@android:drawable/ic_popup_sync"
-        android:title="Synchronize"
-        android:visible="false"
-        app:showAsAction="ifRoom" />
+<!--    <item-->
+<!--        android:id="@+id/action_reload"-->
+<!--        android:icon="@android:drawable/ic_popup_sync"-->
+<!--        android:title="Synchronize"-->
+<!--        android:visible="false"-->
+<!--        app:showAsAction="ifRoom" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/action_new"-->
+<!--        android:title="New"-->
+<!--        android:icon="@android:drawable/ic_menu_add"-->
+<!--        app:showAsAction="ifRoom"/>-->
 
     <item
-        android:id="@+id/action_new"
-        android:title="New"
-        android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/bSearch"
+        android:title="Search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.widget.SearchView"/>
 
 </menu>

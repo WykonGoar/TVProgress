@@ -205,7 +205,14 @@ public class DatabaseConnection extends Activity {
             //status
             String status = mCursor.getString(mCursor.getColumnIndex("status"));
 
-            Show show = new Show(id, title, currentSeason, currentEpisode, banner, url, status);
+            float rating = mCursor.getFloat(mCursor.getColumnIndex("rating"));
+            int iWatchedAll = mCursor.getInt(mCursor.getColumnIndex("watched_all"));
+
+            Show show = new Show(id, title);
+            show.setCurrentSeason(currentSeason);
+            show.setCurrentEpisode(currentEpisode);
+            show.setRating(rating);
+            show.setWatchedAll(iWatchedAll == 1);
             shows.add(show);
 
             mCursor.moveToNext();

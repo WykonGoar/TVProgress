@@ -22,6 +22,7 @@ import com.example.wouter.tvprogress.model.API.iOnTaskCompleted;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Show;
 import com.example.wouter.tvprogress.model.ShowListAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.LinkedList;
 
@@ -37,6 +38,8 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_list);
 
@@ -60,8 +63,17 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
             }
         });
 
-        mSearchView = (SearchView) findViewById(R.id.searchView);
-        mSearchView.setOnQueryTextListener(this);
+//        mSearchView = (SearchView) findViewById(R.id.searchView);
+//        mSearchView.setOnQueryTextListener(this);
+
+        FloatingActionButton fab = findViewById(R.id.fabAdd);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            Intent mIntent = new Intent(getApplicationContext(), EditShowActivity.class);
+            startActivity(mIntent);
+            }
+        });
 
         loadShows();
 //        ReloadEpisodeList();
@@ -118,6 +130,16 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_show_list, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.bSearch);
+        SearchView searchView = null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setOnQueryTextListener(this);
+        }
+
         return true;
     }
 
@@ -127,12 +149,6 @@ public class ShowListActivity extends AppCompatActivity implements SearchView.On
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        if(id == R.id.action_new)
-        {
-            Intent mIntent = new Intent(getApplicationContext(), EditShowActivity.class);
-            startActivity(mIntent);
-        }
 
 //        if(id == R.id.action_reload)
 //        {

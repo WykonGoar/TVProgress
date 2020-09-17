@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:weightSum="1">
@@ -14,45 +16,42 @@
         android:scaleType="fitXY" />
     -->
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Titel"
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Titel"
-            android:id="@+id/tvTitle"
-            android:layout_gravity="left|center_horizontal" />
+    <TextView
+        android:id="@+id/tvWatchedAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Watched all"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Current season"
-            android:id="@+id/tvCurrentSeason" />
+    <TextView
+        android:id="@+id/tvCurrentSeason"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Current season"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-        <RelativeLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Current episode"
-                android:layout_alignParentLeft="true"
-                android:id="@+id/tvCurrentEpisode" />
+    <TextView
+        android:id="@+id/tvCurrentEpisode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Current episode"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvCurrentSeason" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_alignParentRight="true"
-                android:id="@+id/tvStatus" />
-        </RelativeLayout>
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

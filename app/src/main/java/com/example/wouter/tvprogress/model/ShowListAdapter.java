@@ -2,10 +2,12 @@ package com.example.wouter.tvprogress.model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -58,14 +60,22 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
         View rowView = mLayoutInflater.inflate(R.layout.show_row, parent, false);
 
         TextView tvTitle = (TextView) rowView.findViewById(R.id.tvTitle);
-        TextView tvStatus = (TextView) rowView.findViewById(R.id.tvStatus);
+        TextView tvWatchedAll = rowView.findViewById(R.id.tvWatchedAll);
+//        ImageView cbWatchedAll = rowView.findViewById(R.id.cbWatchedAll);
+//        TextView tvStatus = (TextView) rowView.findViewById(R.id.tvStatus);
         TextView tvCurrentSeason = (TextView) rowView.findViewById(R.id.tvCurrentSeason);
         TextView tvCurrentEpisode = (TextView) rowView.findViewById(R.id.tvCurrentEpisode);
 
         Show show = mShows.get(position);
 
         tvTitle.setText(show.getTitle());
-        tvStatus.setText(show.getStatus());
+
+        if (show.getWatchedAll())
+            tvWatchedAll.setVisibility(View.VISIBLE);
+        else
+            tvWatchedAll.setVisibility(View.INVISIBLE);
+
+        //        tvStatus.setText(show.getStatus());
 
 //        if(!show.getURL().isEmpty()){
 //            Episode lastSeenEpisode = mDatabaseConnection.getLastSeenEpisode(show.getId());

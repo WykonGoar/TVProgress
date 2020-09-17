@@ -1,34 +1,26 @@
 package com.example.wouter.tvprogress.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.wouter.tvprogress.R;
-import com.example.wouter.tvprogress.model.API.CallAPIAllEpisodes;
-import com.example.wouter.tvprogress.model.API.iOnTaskCompleted;
 import com.example.wouter.tvprogress.model.DatabaseConnection;
 import com.example.wouter.tvprogress.model.Episode;
-import com.example.wouter.tvprogress.model.EpisodeListAdapter;
 import com.example.wouter.tvprogress.model.Show;
 
 import java.util.HashMap;
@@ -44,7 +36,7 @@ public class ShowActivity extends AppCompatActivity { //implements iOnTaskComple
     private TextView tvNextTitle;
     private TextView tvNext;
 
-    private LinearLayout llEditable;
+    private ConstraintLayout llEditable;
     private LinearLayout llNext;
     private LinearLayout llNextEpisode;
 
@@ -53,6 +45,8 @@ public class ShowActivity extends AppCompatActivity { //implements iOnTaskComple
     private TextView tvUpToDate;
     private EditText etCurrentSeason;
     private EditText etCurrentEpisode;
+    private CheckBox cbWatchedAll;
+    private RatingBar rbRating;
     private ImageView ivBanner;
     private ExpandableListView  expandableListView;
     private DatabaseConnection mDatabaseConnection;
@@ -72,14 +66,16 @@ public class ShowActivity extends AppCompatActivity { //implements iOnTaskComple
         //SQLiteDatabase mDatabase = openOrCreateDatabase("TVProgressDB", MODE_PRIVATE, null);
         mDatabaseConnection = new DatabaseConnection(this);
 
-        tvNextTitle = (TextView) findViewById(R.id.tvNextTitle);
-        tvNext = (TextView) findViewById(R.id.tvNext);
+//        tvNextTitle = (TextView) findViewById(R.id.tvNextTitle);
+//        tvNext = (TextView) findViewById(R.id.tvNext);
 
-        llEditable = (LinearLayout) findViewById(R.id.llEditable);
-        llNext = (LinearLayout) findViewById(R.id.llNext);
-        llNextEpisode = (LinearLayout) findViewById(R.id.llNextEpisode);
+        llEditable = findViewById(R.id.llEditable);
+//        llNext = (LinearLayout) findViewById(R.id.llNext);
+//        llNextEpisode = (LinearLayout) findViewById(R.id.llNextEpisode);
 
         tvTitle = (TextView) findViewById(R.id.tvTitle);
+        cbWatchedAll = findViewById(R.id.cbWatchedAll);
+        rbRating = findViewById(R.id.rbRating);
 
 //        tvStatus = (TextView) findViewById(R.id.tvStatus);
 //
@@ -220,8 +216,8 @@ public class ShowActivity extends AppCompatActivity { //implements iOnTaskComple
 
         tvTitle.setText(mShow.getTitle());
 //        tvStatus.setText(mShow.getStatus());
-        System.out.println(String.format("current season: %d", mShow.getCurrentSeason()));
-        System.out.println(String.format("current episode: %d", mShow.getCurrentEpisode()));
+        rbRating.setRating(mShow.getRating());
+        cbWatchedAll.setChecked(mShow.getWatchedAll());
         etCurrentSeason.setText("" + mShow.getCurrentSeason());
         etCurrentEpisode.setText("" + mShow.getCurrentEpisode());
 
@@ -299,10 +295,9 @@ public class ShowActivity extends AppCompatActivity { //implements iOnTaskComple
     }
 
     private void updateSeasonEpisode(){
-        System.out.println("updateSeasonEpisode!!!!!!!!!");
-
         mShow.setCurrentSeason(Integer.parseInt(etCurrentSeason.getText().toString()));
         mShow.setCurrentEpisode(Integer.parseInt(etCurrentEpisode.getText().toString()));
+        mShow.setWatchedAll(cbWatchedAll.isChecked());
 
         mShow.save(mDatabaseConnection);
     }

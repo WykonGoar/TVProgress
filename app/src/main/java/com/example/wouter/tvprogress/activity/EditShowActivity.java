@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class EditShowActivity extends AppCompatActivity { //implements iOnTaskCo
 
     private Show mShow;
     private EditText etTitle;
+    private RatingBar rbRating;
     private ImageView ivImage;
     private ImageView ivBanner;
     private TextView tvResource;
@@ -78,6 +80,9 @@ public class EditShowActivity extends AppCompatActivity { //implements iOnTaskCo
 
         etTitle = (EditText) findViewById(R.id.etTitle);
         etTitle.setText(mShow.getTitle());
+
+        rbRating = findViewById(R.id.rbRating);
+        rbRating.setRating(mShow.getRating());
 
 //        ivBanner = (ImageView) findViewById(R.id.ivBanner);
 //        ivBanner.setOnClickListener(new View.OnClickListener() {
@@ -164,8 +169,6 @@ public class EditShowActivity extends AppCompatActivity { //implements iOnTaskCo
 //    }
 
     private void saveShow(){
-        Intent mIntent = new Intent(getApplicationContext(), ShowActivity.class);
-
         String title = etTitle.getText().toString();
 
         //Save pictures
@@ -200,10 +203,9 @@ public class EditShowActivity extends AppCompatActivity { //implements iOnTaskCo
 //        }
 //        mShow.setURL(tvResource.getText().toString());
 
-        mShow.save(mDatabaseConnection);
+        mShow.setRating(rbRating.getRating());
 
-        mIntent.putExtra("id", mShow.getId());
-        startActivity(mIntent);
+        mShow.save(mDatabaseConnection);
         finish();
     }
 
