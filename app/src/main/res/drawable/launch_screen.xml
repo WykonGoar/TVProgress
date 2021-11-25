@@ -10,7 +10,7 @@
     <item>
 
         <bitmap
-            android:src="@drawable/tv_progress"
+            android:src="@drawable/m_list"
             android:gravity="center"/>
 
     </item>

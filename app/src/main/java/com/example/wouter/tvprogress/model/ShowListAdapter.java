@@ -92,7 +92,7 @@ public class ShowListAdapter extends BaseAdapter implements Filterable {
 //        }
 //        else {
         tvCurrentSeason.setText("Season: " + show.getCurrentSeason());
-        tvCurrentEpisode.setText("Episode: " + show.getCurrentEpisode());
+        tvCurrentEpisode.setText("Chapter: " + show.getCurrentEpisode());
 //        }
 
         return  rowView;

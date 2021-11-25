@@ -43,7 +43,7 @@
             android:id="@+id/textView8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current episode"
+            android:text="Current chapter"
             android:textAlignment="center"
             android:textColor="@color/design_default_color_on_secondary"
             android:textSize="24sp"
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_weight="45"
-                android:text="Next episode" />
+                android:text="Next chapter" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
